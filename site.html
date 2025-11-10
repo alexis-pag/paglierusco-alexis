@@ -3,37 +3,24 @@
 <head>
   <meta charset="utf-8">
   <title>Image aléatoire</title>
-   <style>
+  <style>
     #image {
       width: 400px;
-      height: 300px; /* fixe la taille pour éviter le mouvement */
-      object-fit: contain; /* garde le bon ratio */
-      display: block;
+      height: 300px;
+      object-fit: contain;
       border: 1px solid #ccc;
-      background: #f8f8f8;
-      margin-bottom: 10px;
+      cursor: pointer; /* indique que c'est cliquable */
     }
   </style>
 </head>
-<body>
-  <p>voici un code html , si vous cliquer sur le bouton si dessous une image d'un lapin va apparaitre </p>
-  <img id="image" src="" width="400">
-  <br>
-  <button onclick="changerImage()">Nouvelle image</button>
+<body style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;">
+  <h2>Cliquer sur l'image pour changer</h2>
+  <img id="image" src="" alt="image aléatoire" onclick="changerImage()">
 
   <script>
-    // liste des images
     const images = [
-      'image/bounty.jpg',
-      'image/bounty2.jpg',
-      'image/bounty3.jpg',
-      'image/bounty4.jpg',
-      'image/bounty5.jpg',
-      'image/bounty6.jpg',
-      'image/bounty7.jpg',
-      'image/bounty8.jpg',
-      'image/bountygraille.jpg',
-      'img10.jpg'
+      'image/bounty.jpg','image/bounty2.jpg','image/bounty3.jpg','image/bounty4.jpg','image/bounty5.jpg',
+      'image/bounty6.jpg','image/bounty7.jpg','image/bounty8.jpg','image/bountygraille.jpg'
     ];
 
     function changerImage() {
@@ -45,4 +32,6 @@
     changerImage();
   </script>
 </body>
+</html>
+
 </html>
