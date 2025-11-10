@@ -2,25 +2,63 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <title>Image aléatoire</title>
+  <title>Images aléatoires avec fond</title>
   <style>
+    body {
+      /* Fond d'écran plein site */
+      background-image: url('fond.jpg'); /* remplace par ton fichier de fond */
+      background-size: cover;       
+      background-repeat: no-repeat; 
+      background-position: center;  
+      
+      /* Centrer le contenu */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      
+      height: 100vh;
+      margin: 0;
+    }
+
+    h2 {
+      color: white;
+      text-shadow: 1px 1px 5px black;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
     #image {
-      width: 400px;
-      height: 300px;
+      width: 80%;          /* largeur adaptable */
+      max-width: 600px;     /* limite la taille sur grand écran */
+      height: auto;         /* garde le ratio */
       object-fit: contain;
-      border: 1px solid #ccc;
-      cursor: pointer; /* indique que c'est cliquable */
+      border: 2px solid #fff;
+      cursor: pointer;      /* indique que c'est cliquable */
+      box-shadow: 0 0 15px rgba(0,0,0,0.5);
+      transition: transform 0.2s;
+    }
+
+    #image:hover {
+      transform: scale(1.05); /* effet léger au survol */
     }
   </style>
 </head>
-<body style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;">
+<body>
   <h2>Cliquer sur l'image pour changer</h2>
   <img id="image" src="" alt="image aléatoire" onclick="changerImage()">
 
   <script>
     const images = [
-      'image/bounty.jpg','image/bounty2.jpg','image/bounty3.jpg','image/bounty4.jpg','image/bounty5.jpg',
-      'image/bounty6.jpg','image/bounty7.jpg','image/bounty8.jpg','image/bountygraille.jpg'
+      'image/bounty.jpg',
+      'image/bounty2.jpg',
+      'image/bounty3.jpg',
+      'image/bounty4.jpg',
+      'image/bounty5.jpg',
+      'image/bounty6.jpg',
+      'image/bounty7.jpg',
+      'image/bounty8.jpg',
+      'image/bountygraille.jpg'
     ];
 
     function changerImage() {
@@ -28,10 +66,8 @@
       document.getElementById('image').src = images[index];
     }
 
-    // affiche une image au chargement
+    // Affiche une image au chargement
     changerImage();
   </script>
 </body>
-</html>
-
 </html>
