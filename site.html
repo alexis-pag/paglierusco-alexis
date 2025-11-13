@@ -111,20 +111,6 @@
       gap: 5px;
     }
 
-    .item button {
-      background-color: #ffcc00;
-      border: none;
-      border-radius: 5px;
-      padding: 3px 8px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .item button:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
-
     .building-icon-container {
       position: relative;
       display: inline-block;
@@ -153,12 +139,30 @@
       pointer-events: none;
     }
 
-    .reset-button {
-      margin-top: 10px;
+    /* Boutons bleus avec animation hover */
+    button, .reset-button {
+      background-color: #007BFF; /* bleu */
+      color: white;
+      border: none;
+      border-radius: 5px;
       padding: 5px 10px;
       font-weight: bold;
-      border-radius: 5px;
       cursor: pointer;
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+
+    button:hover, .reset-button:hover {
+      transform: scale(1.1);
+      background-color: #0056b3;
+    }
+
+    .item button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    .reset-button {
+      margin-bottom: 10px;
     }
   </style>
 </head>
@@ -169,10 +173,10 @@
       <div id="counter">Bounty cliqué : 0</div>
       <div id="cps">CPS : 0</div>
       <img id="image" src="" alt="image aléatoire" onclick="clicBounty(event)">
-      <button class="reset-button" onclick="resetJeu()">Réinitialiser</button>
     </div>
 
     <div class="store">
+      <button class="reset-button" onclick="resetJeu()">Réinitialiser</button>
       <h3>Magasin de croquettes</h3>
       <div id="storeItems"></div>
     </div>
@@ -213,7 +217,6 @@
       {name:"Univers de croquettes", price:100000, mult:0, auto:1000, owned:0, icon:'image/univers.png'}
     ];
 
-    // Charger la sauvegarde
     function chargerJeu() {
       const saved = localStorage.getItem('bountySave');
       if(saved){
@@ -227,7 +230,6 @@
       }
     }
 
-    // Sauvegarder automatiquement
     function sauvegarderJeu() {
       const saveData = {
         count: count,
@@ -282,7 +284,7 @@
         updateCounter();
         updateStore();
         popCounter(index);
-        sauvegarderJeu(); // sauvegarde après achat
+        sauvegarderJeu();
       }
     }
 
@@ -315,7 +317,7 @@
       jouerSon();
       afficherPlusUn(event);
       updateStore();
-      sauvegarderJeu(); // sauvegarde après clic
+      sauvegarderJeu();
     }
 
     function updateCounter() {
@@ -359,7 +361,6 @@
       setTimeout(()=>{ plusOne.remove(); },1000);
     }
 
-    // Réinitialiser le jeu
     function resetJeu() {
       localStorage.removeItem('bountySave');
       count = 0;
@@ -372,7 +373,6 @@
       updateStore();
     }
 
-    // Clics automatiques
     setInterval(() => {
       storeItemsData.forEach(item => {
         if(item.auto > 0 && item.owned){
