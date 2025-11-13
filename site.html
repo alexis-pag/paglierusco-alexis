@@ -5,7 +5,7 @@
   <title>bounty</title>
   <style>
     body {
-      background-image: url('image/image.png');
+      background-image: url('image/image.png'); /* ton fond d'écran */
       background-size: cover;
       background-repeat: no-repeat;
       background-position: center;
@@ -15,9 +15,10 @@
       align-items: center;
       height: 100vh;
       margin: 0;
+      overflow: hidden;
     }
 
-    /* Barre de boutons en haut à droite */
+    /* Boutons en haut à droite */
     .top-buttons {
       position: absolute;
       top: 15px;
@@ -43,22 +44,23 @@
     h2 {
       color: white;
       text-shadow: 1px 1px 5px black;
-      margin-bottom: 20px;
+      margin-bottom: 30px;
       text-align: center;
+      font-size: 1.5em;
     }
 
     #image {
-      width: 400px;
-      height: 300px;
-      object-fit: contain;
-      border: 2px solid #fff;
+      width: 700px;         /* image grande */
+      height: 500px;        /* taille fixe */
+      object-fit: contain;  /* garde le bon ratio */
+      border: 3px solid #fff;
       cursor: pointer;
-      box-shadow: 0 0 15px rgba(0,0,0,0.5);
+      box-shadow: 0 0 25px rgba(0,0,0,0.7);
       transition: transform 0.15s;
     }
 
     #image:active {
-      transform: scale(0.98);
+      transform: scale(0.97);
     }
   </style>
 </head>
@@ -69,9 +71,9 @@
     <button class="btn" onclick="window.open('https://tonlien2.com', '_blank')">Lien 2</button>
   </div>
 
-  <h2>appuyer sur l'image pour voir d'autre photo de bounty</h2>
+  <h2>Appuie sur l'image pour voir d'autres photos de Bounty</h2>
 
-  <!-- Image -->
+  <!-- Image principale -->
   <img id="image" src="" alt="image aléatoire" onclick="changerImageEtJouerSon()">
 
   <!-- Son -->
@@ -117,6 +119,7 @@
       });
     }
 
+    // Affiche une première image au chargement
     changerImageEtJouerSon();
   </script>
 </body>
