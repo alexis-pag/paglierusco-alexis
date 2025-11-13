@@ -131,8 +131,8 @@
     }
 
     .building-icon-container img {
-      width: 35px;
-      height: 35px;
+      width: 50px; /* taille modifiée */
+      height: 50px; /* taille modifiée */
       margin-left: 5px;
     }
 
@@ -159,7 +159,7 @@
     <div class="game">
       <h2>Appuie sur Bounty pour le faire apparaître !</h2>
       <div id="counter">Bounty cliqué : 0</div>
-      <div id="cps">CPS : 0</div> <!-- Compteur de clics par seconde -->
+      <div id="cps">CPS : 0</div>
       <img id="image" src="" alt="image aléatoire" onclick="clicBounty(event)">
     </div>
 
@@ -183,14 +183,14 @@
     const imgEl = document.getElementById('image');
     const sound = document.getElementById('clickSound');
     const counterEl = document.getElementById('counter');
-    const cpsEl = document.getElementById('cps'); // élément CPS
+    const cpsEl = document.getElementById('cps');
     const storeDiv = document.getElementById('storeItems');
 
     let lastIndex = -1;
     let count = 0;
     let multiplier = 1;
-    let lastClickTime = 0; // limite clics
-    let cps = 0; // clics par seconde
+    let lastClickTime = 0;
+    let cps = 0;
 
     const storeItemsData = [
       {name:"Gamelle de croquette", price:10, mult:1, auto:0, owned:0, icon:'image/gamelle.png'},
@@ -243,8 +243,8 @@
       const item = storeItemsData[index];
       if(count >= item.price){
         count -= item.price;
-        if(item.mult > 0) multiplier += item.mult; // Gamelle
-        if(item.auto > 0) item.owned += 1; // autres bâtiments
+        if(item.mult > 0) multiplier += item.mult;
+        if(item.auto > 0) item.owned += 1;
         item.price *= 1.15;
         updateCounter();
         updateStore();
@@ -272,7 +272,7 @@
 
     function clicBounty(event) {
       const now = Date.now();
-      if (now - lastClickTime < 300) return; // limite 0.3 seconde
+      if (now - lastClickTime < 300) return;
       lastClickTime = now;
 
       count += multiplier;
@@ -290,7 +290,6 @@
     }
 
     function calculCPS() {
-      // Somme de tous les auto clics par seconde
       let total = 0;
       storeItemsData.forEach(item => {
         if(item.auto > 0 && item.owned > 0){
@@ -325,13 +324,10 @@
       setTimeout(()=>{ plusOne.remove(); },1000);
     }
 
-    // Clics automatiques
     setInterval(() => {
-      let cpsUpdate = 0;
       storeItemsData.forEach(item => {
         if(item.auto > 0 && item.owned){
           count += item.auto * item.owned;
-          cpsUpdate += item.auto * item.owned;
         }
       });
       updateCounter();
