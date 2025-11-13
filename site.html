@@ -17,6 +17,29 @@
       margin: 0;
     }
 
+    /* Barre de boutons en haut à droite */
+    .top-buttons {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      background-color: rgba(255, 255, 255, 0.8);
+      border: none;
+      border-radius: 8px;
+      padding: 8px 14px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.2s;
+    }
+
+    .btn:hover {
+      background-color: rgba(255, 255, 255, 1);
+    }
+
     h2 {
       color: white;
       text-shadow: 1px 1px 5px black;
@@ -40,6 +63,12 @@
   </style>
 </head>
 <body>
+  <!-- Boutons en haut à droite -->
+  <div class="top-buttons">
+    <button class="btn" onclick="window.open('https://tonlien1.com', '_blank')">Lien 1</button>
+    <button class="btn" onclick="window.open('https://tonlien2.com', '_blank')">Lien 2</button>
+  </div>
+
   <h2>appuyer sur l'image pour voir d'autre photo de bounty</h2>
 
   <!-- Image -->
@@ -77,12 +106,10 @@
     }
 
     function changerImageEtJouerSon() {
-      // change l'image
       const idx = pickRandomIndex();
       imgEl.src = images[idx];
       lastIndex = idx;
 
-      // rejoue le son
       sound.currentTime = 0;
       sound.volume = 1.0;
       sound.play().catch(err => {
@@ -90,7 +117,6 @@
       });
     }
 
-    // image initiale
     changerImageEtJouerSon();
   </script>
 </body>
