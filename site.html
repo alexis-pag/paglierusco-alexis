@@ -4,25 +4,58 @@
   <meta charset="utf-8">
   <title>Bounty Clicker</title>
   <style>
+    /* --- Animation de fond fluide --- */
     body {
-      background-image: url('image/image.png');
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position: center;
+      background: linear-gradient(270deg, #87CEFA, #1E90FF, #00BFFF, #87CEFA);
+      background-size: 800% 800%;
+      animation: gradientShift 12s ease infinite;
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      height: 100vh;
-      margin: 0;
-      overflow: hidden;
-      font-family: sans-serif;
     }
 
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* --- Particules lumineuses --- */
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: -1;
+    }
+
+    .particle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 50%;
+      animation: floatParticle 10s linear infinite;
+    }
+
+    @keyframes floatParticle {
+      0% { transform: translateY(100vh) scale(0.8); opacity: 0; }
+      25% { opacity: 1; }
+      100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+    }
+
+    /* --- Structure principale --- */
     .main {
       display: flex;
       flex-direction: row;
       align-items: flex-start;
-      gap: 50px;
+      gap: 40px;
       margin-top: 50px;
     }
 
@@ -30,42 +63,49 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      position: relative;
+      background: rgba(255,255,255,0.1);
+      border-radius: 20px;
+      box-shadow: 0 0 25px rgba(255,255,255,0.3);
+      padding: 20px;
+      backdrop-filter: blur(10px);
     }
 
     h2 {
-      color: white;
-      text-shadow: 1px 1px 5px black;
-      margin-bottom: 15px;
-      text-align: center;
-      font-size: 1.5em;
+      color: #fff;
+      text-shadow: 2px 2px 10px #000;
+      margin-bottom: 10px;
+      font-size: 1.8em;
+      letter-spacing: 1px;
     }
 
     #counter, #cps {
-      color: white;
-      font-size: 1.8em;
-      text-shadow: 1px 1px 5px black;
+      color: #FFD700;
+      font-size: 1.6em;
+      text-shadow: 2px 2px 8px #000;
       margin-bottom: 10px;
+      font-weight: bold;
     }
 
     #image {
       width: 700px;
       height: 500px;
       object-fit: contain;
-      border: 3px solid #fff;
+      border: 4px solid #fff;
+      border-radius: 15px;
       cursor: pointer;
-      box-shadow: 0 0 25px rgba(0,0,0,0.7);
-      transition: transform 0.1s ease;
-      position: relative;
+      box-shadow: 0 0 25px rgba(255,255,255,0.3);
+      transition: transform 0.1s ease, box-shadow 0.3s ease;
     }
 
     #image:active {
-      transform: scale(0.95);
+      transform: scale(0.97);
+      box-shadow: 0 0 35px rgba(255,255,255,0.8);
     }
 
+    /* --- Animation du +1 --- */
     .plus-one {
       position: absolute;
-      color: #fff;
+      color: #00FF7F;
       font-size: 2em;
       font-weight: bold;
       text-shadow: 2px 2px 8px black;
@@ -79,36 +119,39 @@
       100% { opacity: 0; transform: translateY(-80px) scale(1.3); }
     }
 
-    @keyframes pop {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.5); }
-      100% { transform: scale(1); }
-    }
-
+    /* --- Magasin --- */
     .store {
       display: flex;
       flex-direction: column;
-      background-color: rgba(255,255,255,0.9);
+      background: linear-gradient(180deg, #ffffffbb, #87CEFAaa);
       padding: 15px;
-      border-radius: 10px;
-      width: 300px;
-      max-height: 600px;
-      overflow-y: auto;
+      border-radius: 15px;
+      width: 320px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      backdrop-filter: blur(8px);
     }
 
     .store h3 {
-      margin-top: 0;
       text-align: center;
+      color: #003366;
+      font-size: 1.3em;
+      text-shadow: 1px 1px 2px #fff;
     }
 
     .item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin: 5px 0;
-      padding: 5px;
-      border-bottom: 1px solid #ccc;
-      gap: 5px;
+      margin: 6px 0;
+      padding: 6px;
+      background: rgba(255,255,255,0.8);
+      border-radius: 10px;
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    .item:hover {
+      transform: scale(1.03);
+      background: rgba(255,255,255,0.95);
     }
 
     .building-icon-container {
@@ -117,16 +160,17 @@
     }
 
     .building-icon-container img {
-      width: 50px; /* taille icône */
-      height: 50px; /* taille icône */
-      margin-left: 5px;
+      width: 50px;
+      height: 50px;
+      border-radius: 5px;
+      margin-left: 8px;
     }
 
     .building-count {
       position: absolute;
       top: -6px;
       right: -6px;
-      background: red;
+      background: #FF4500;
       color: white;
       font-size: 12px;
       width: 18px;
@@ -139,258 +183,67 @@
       pointer-events: none;
     }
 
-    /* Boutons bleus avec animation hover */
+    /* --- Boutons --- */
     button, .reset-button {
-      background-color: #007BFF; /* bleu */
+      background: linear-gradient(90deg, #007BFF, #00BFFF);
       color: white;
       border: none;
-      border-radius: 5px;
-      padding: 5px 10px;
+      border-radius: 8px;
+      padding: 6px 12px;
       font-weight: bold;
       cursor: pointer;
-      transition: transform 0.2s ease, background-color 0.2s ease;
+      box-shadow: 0 0 10px rgba(0,0,255,0.5);
+      transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.3s ease;
     }
 
     button:hover, .reset-button:hover {
       transform: scale(1.1);
-      background-color: #0056b3;
-    }
-
-    .item button:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
+      background: linear-gradient(90deg, #0056b3, #1E90FF);
+      box-shadow: 0 0 20px rgba(0,0,255,0.8);
     }
 
     .reset-button {
+      background: linear-gradient(90deg, #FF6347, #FF4500);
       margin-bottom: 10px;
+    }
+
+    .reset-button:hover {
+      background: linear-gradient(90deg, #FF4500, #FF6347);
+      box-shadow: 0 0 20px rgba(255,69,0,0.8);
     }
   </style>
 </head>
+
 <body>
+  <div class="particles"></div>
+
   <div class="main">
     <div class="game">
-      <h2>Appuie sur Bounty pour le faire apparaître !</h2>
-      <div id="counter">Bounty cliqué : 0</div>
+      <h2>Bounty Clicker</h2>
+      <div id="counter">Croquettes : 0</div>
       <div id="cps">CPS : 0</div>
-      <img id="image" src="" alt="image aléatoire" onclick="clicBounty(event)">
+      <img id="image" src="image/bounty.jpg" alt="Bounty" onclick="clickBounty(event)">
     </div>
 
     <div class="store">
-      <button class="reset-button" onclick="resetJeu()">Réinitialiser</button>
-      <h3>Magasin de croquettes</h3>
-      <div id="storeItems"></div>
+      <button class="reset-button" onclick="resetGame()">Réinitialiser</button>
+      <h3>Magasin</h3>
+      <!-- Contenu du magasin ici -->
     </div>
   </div>
 
-  <audio id="clickSound">
-    <source src="audio/Mouse Click Sound Effect.mp3" type="audio/mpeg">
-  </audio>
-
   <script>
-    const images = [
-      'image/bounty.jpg','image/bounty2.jpg','image/bounty3.jpg','image/bounty4.jpg',
-      'image/bounty5.jpg','image/bounty6.jpg','image/bounty7.jpg','image/bounty8.jpg',
-      'image/bountygraille.jpg'
-    ];
-
-    const imgEl = document.getElementById('image');
-    const sound = document.getElementById('clickSound');
-    const counterEl = document.getElementById('counter');
-    const cpsEl = document.getElementById('cps');
-    const storeDiv = document.getElementById('storeItems');
-
-    let lastIndex = -1;
-    let count = 0;
-    let multiplier = 1;
-    let lastClickTime = 0;
-    let cps = 0;
-
-    const storeItemsData = [
-      {name:"Gamelle de croquette", price:10, mult:1, auto:0, owned:0, icon:'image/gamelle.png'},
-      {name:"Paquet de croquette", price:50, mult:0, auto:1, owned:0, icon:'image/paquet.png'},
-      {name:"Magasin de croquettes", price:200, mult:0, auto:5, owned:0, icon:'image/magasin.png'},
-      {name:"Supermarcher de croquette", price:500, mult:0, auto:10, owned:0, icon:'image/supermarche.png'},
-      {name:"Hypermarcher de croquettes", price:1000, mult:0, auto:20, owned:0, icon:'image/hypermarcher.png'},
-      {name:"Entrepot de croquettes", price:5000, mult:0, auto:50, owned:0, icon:'image/entrepot.png'},
-      {name:"Usine de croquettes", price:10000, mult:0, auto:100, owned:0, icon:'image/usine.png'},
-      {name:"Dimension de croquettes", price:50000, mult:0, auto:500, owned:0, icon:'image/dimension.png'},
-      {name:"Univers de croquettes", price:100000, mult:0, auto:1000, owned:0, icon:'image/univers.png'}
-    ];
-
-    function chargerJeu() {
-      const saved = localStorage.getItem('bountySave');
-      if(saved){
-        const data = JSON.parse(saved);
-        count = data.count;
-        multiplier = data.multiplier;
-        data.storeItems.forEach((itemSaved, i) => {
-          storeItemsData[i].owned = itemSaved.owned;
-          storeItemsData[i].price = itemSaved.price;
-        });
-      }
+    // Génération automatique des particules lumineuses
+    const particlesContainer = document.querySelector('.particles');
+    for (let i = 0; i < 25; i++) {
+      const p = document.createElement('div');
+      p.classList.add('particle');
+      p.style.left = Math.random() * 100 + '%';
+      p.style.animationDelay = (Math.random() * 10) + 's';
+      p.style.opacity = Math.random();
+      p.style.width = p.style.height = Math.random() * 8 + 'px';
+      particlesContainer.appendChild(p);
     }
-
-    function sauvegarderJeu() {
-      const saveData = {
-        count: count,
-        multiplier: multiplier,
-        storeItems: storeItemsData.map(item => ({owned: item.owned, price: item.price}))
-      };
-      localStorage.setItem('bountySave', JSON.stringify(saveData));
-    }
-
-    function updateStore() {
-      storeDiv.innerHTML = '';
-      storeItemsData.forEach((item, index) => {
-        const itemDiv = document.createElement('div');
-        itemDiv.className = 'item';
-
-        const nameSpan = document.createElement('span');
-        nameSpan.textContent = `${item.name} (${Math.floor(item.price)} croquettes)`;
-
-        const btn = document.createElement('button');
-        btn.textContent = 'Acheter';
-        btn.disabled = count < item.price;
-        btn.onclick = () => acheterItem(index);
-
-        const iconContainer = document.createElement('div');
-        iconContainer.className = 'building-icon-container';
-
-        const img = document.createElement('img');
-        img.src = item.icon;
-
-        const countDiv = document.createElement('div');
-        countDiv.className = 'building-count';
-        countDiv.textContent = item.owned;
-
-        iconContainer.appendChild(img);
-        iconContainer.appendChild(countDiv);
-
-        itemDiv.appendChild(nameSpan);
-        itemDiv.appendChild(btn);
-        itemDiv.appendChild(iconContainer);
-
-        storeDiv.appendChild(itemDiv);
-      });
-    }
-
-    function acheterItem(index) {
-      const item = storeItemsData[index];
-      if(count >= item.price){
-        count -= item.price;
-        if(item.mult > 0) multiplier += item.mult;
-        if(item.auto > 0) item.owned += 1;
-        item.price *= 1.15;
-        updateCounter();
-        updateStore();
-        popCounter(index);
-        sauvegarderJeu();
-      }
-    }
-
-    function popCounter(index) {
-      const itemDiv = storeDiv.children[index];
-      const countDiv = itemDiv.querySelector('.building-count');
-      if(countDiv){
-        countDiv.style.animation = 'none';
-        countDiv.offsetHeight;
-        countDiv.style.animation = 'pop 0.3s ease-out';
-      }
-    }
-
-    function pickRandomIndex() {
-      if (images.length <= 1) return 0;
-      let idx;
-      do { idx = Math.floor(Math.random() * images.length); }
-      while(idx === lastIndex);
-      return idx;
-    }
-
-    function clicBounty(event) {
-      const now = Date.now();
-      if (now - lastClickTime < 300) return;
-      lastClickTime = now;
-
-      count += multiplier;
-      updateCounter();
-      changerImage();
-      jouerSon();
-      afficherPlusUn(event);
-      updateStore();
-      sauvegarderJeu();
-    }
-
-    function updateCounter() {
-      counterEl.textContent = `Bounty cliqué : ${Math.floor(count)} (x${multiplier})`;
-      cps = calculCPS();
-      cpsEl.textContent = `CPS : ${cps}`;
-    }
-
-    function calculCPS() {
-      let total = 0;
-      storeItemsData.forEach(item => {
-        if(item.auto > 0 && item.owned > 0){
-          total += item.auto * item.owned;
-        }
-      });
-      return total;
-    }
-
-    function changerImage() {
-      const idx = pickRandomIndex();
-      imgEl.src = images[idx];
-      lastIndex = idx;
-    }
-
-    function jouerSon() {
-      sound.currentTime = 0;
-      sound.volume = 1.0;
-      sound.play().catch(()=>{});
-    }
-
-    function afficherPlusUn(event) {
-      const plusOne = document.createElement('div');
-      plusOne.className = 'plus-one';
-      plusOne.textContent = `+${multiplier}`;
-      const rect = imgEl.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      plusOne.style.left = `${x - 10}px`;
-      plusOne.style.top = `${y - 20}px`;
-      imgEl.parentElement.appendChild(plusOne);
-      setTimeout(()=>{ plusOne.remove(); },1000);
-    }
-
-    function resetJeu() {
-      localStorage.removeItem('bountySave');
-      count = 0;
-      multiplier = 1;
-      storeItemsData.forEach(item => {
-        item.owned = 0;
-        item.price = item.price / Math.pow(1.15, item.owned);
-      });
-      updateCounter();
-      updateStore();
-    }
-
-    setInterval(() => {
-      storeItemsData.forEach(item => {
-        if(item.auto > 0 && item.owned){
-          count += item.auto * item.owned;
-        }
-      });
-      updateCounter();
-      updateStore();
-    }, 1000);
-
-    // Sauvegarde automatique toutes les 1 minute
-    setInterval(sauvegarderJeu, 60000);
-
-    // Initialisation
-    changerImage();
-    chargerJeu();
-    updateCounter();
-    updateStore();
   </script>
 </body>
 </html>
