@@ -29,18 +29,20 @@
   }
 
   #image {
-    width: 400px;       /* largeur fixe */
-    height: 300px;      /* hauteur fixe */
-    object-fit: contain; /* garde le ratio */
+    width: 400px;       
+    height: 300px;      
+    object-fit: contain;
     border: 2px solid #fff;
-    cursor: pointer;
     box-shadow: 0 0 15px rgba(0,0,0,0.5);
     margin-top: 20px;
-    transition: none;   /* désactive toute transition */
+    transition: none !important;   /* supprime toute animation */
+    transform: none !important;    /* supprime tout scale */
+    cursor: default;               /* pas de curseur */
+    touch-action: none;            /* désactive effet tactile mobile */
   }
 
   #image:hover {
-    transform: none;    /* désactive tout effet hover */
+    transform: none !important;
     box-shadow: 0 0 15px rgba(0,0,0,0.5);
   }
 
