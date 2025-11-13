@@ -55,27 +55,6 @@
     text-shadow: 1px 1px 5px black;
   }
 
-  #reset-btn {
-    margin: 10px 0;
-    padding: 8px 12px;
-    font-weight: bold;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    background: linear-gradient(90deg, #FF4C4C, #FF7777);
-    color: white;
-    font-size: 1em;
-    width: 80%;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.3);
-    transition: transform 0.2s, background 0.2s, box-shadow 0.3s;
-  }
-
-  #reset-btn:hover {
-    transform: scale(1.05);
-    background: linear-gradient(90deg, #cc0000, #ff4c4c);
-    box-shadow: 0 0 10px red;
-  }
-
   #store {
     display: flex;
     flex-direction: column;
@@ -119,6 +98,29 @@
     box-shadow: 0 0 8px #00BFFF;
   }
 
+  /* Bouton reset en bas */
+  #reset-btn {
+    margin-top: auto;
+    margin-bottom: 20px;
+    padding: 8px 12px;
+    font-weight: bold;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    background: linear-gradient(90deg, #FF4C4C, #FF7777);
+    color: white;
+    font-size: 1em;
+    width: 80%;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+    transition: transform 0.2s, background 0.2s, box-shadow 0.3s;
+  }
+
+  #reset-btn:hover {
+    transform: scale(1.05);
+    background: linear-gradient(90deg, #cc0000, #ff4c4c);
+    box-shadow: 0 0 10px red;
+  }
+
   /* Animation du +1 */
   .click-anim {
     position: absolute;
@@ -152,10 +154,11 @@
 <div id="score">Click : 0</div>
 <img id="image" src="image/bounty.jpg" alt="Bounty">
 
-<!-- Bouton Réinitialiser -->
-<button id="reset-btn">Réinitialiser le jeu</button>
-
+<!-- Boutique -->
 <div id="store"></div>
+
+<!-- Bouton Réinitialiser en bas -->
+<button id="reset-btn">Réinitialiser le jeu</button>
 
 <script>
 let score = 0;
@@ -221,20 +224,18 @@ items.forEach((item, i)=>{
   });
 });
 
-// Animation flash d'achat
 function flashButton(id){
   const btn = document.getElementById(id);
   btn.style.boxShadow = "0 0 10px yellow";
   setTimeout(()=>{ btn.style.boxShadow = ""; }, 300);
 }
 
-// Reset avec effet visuel + reset prix de base
+// Reset avec reset des prix
 document.getElementById('reset-btn').addEventListener('click', ()=>{
   if(confirm("Réinitialiser le jeu ?")){
     score = 0;
     clickValue = 1;
 
-    // Réinitialise le magasin à ses valeurs de base
     items.forEach((item, i) => {
       item.count = 0;
       item.price = basePrices[i];
@@ -244,7 +245,7 @@ document.getElementById('reset-btn').addEventListener('click', ()=>{
     updateScore();
     updateStore();
 
-    // Effet flash rouge
+    // Flash rouge
     document.body.style.animation = "flashRed 0.5s";
     setTimeout(()=>{ document.body.style.animation = ""; }, 500);
   }
@@ -274,7 +275,6 @@ img.addEventListener('click', (e)=>{
   setTimeout(()=>{ canClick = true; }, 300);
 });
 
-// Animation +1
 function createClickAnim(e){
   const anim = document.createElement('div');
   anim.className = 'click-anim';
@@ -285,7 +285,6 @@ function createClickAnim(e){
   setTimeout(()=>{ anim.remove(); }, 800);
 }
 
-// Auto CPS
 setInterval(()=>{
   let total = items.reduce((a,b)=>a+b.cps*b.count,0);
   score += total;
@@ -293,7 +292,6 @@ setInterval(()=>{
   saveData();
 },1000);
 
-// Sauvegarde backup 1 min
 setInterval(saveData, 60000);
 
 updateScore();
