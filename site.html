@@ -2,20 +2,16 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>Bounty Clicker</title>
+<title>Bounty Clicker Pro</title>
 <style>
-/* --- Fond animé --- */
+/* === Fond animé === */
 body {
+  margin: 0; height: 100vh; overflow: hidden;
+  font-family: 'Poppins', sans-serif;
+  display: flex; justify-content: center; align-items: flex-start;
   background: linear-gradient(270deg, #87CEFA, #1E90FF, #00BFFF, #87CEFA);
   background-size: 800% 800%;
   animation: gradientShift 12s ease infinite;
-  font-family: 'Poppins', sans-serif;
-  margin: 0;
-  height: 100vh;
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
 }
 @keyframes gradientShift {
   0% { background-position: 0% 50%; }
@@ -23,249 +19,99 @@ body {
   100% { background-position: 0% 50%; }
 }
 
-/* --- Particules lumineuses --- */
-.particles {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  z-index: -1;
-}
+/* === Particules === */
+.particles { position: fixed; top:0; left:0; width:100%; height:100%; overflow:hidden; z-index:-1; }
 .particle {
-  position: absolute;
-  width: 6px;
-  height: 6px;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 50%;
-  animation: floatParticle 10s linear infinite;
+  position:absolute; border-radius:50%; background: rgba(255,255,255,0.8);
+  animation: floatParticle 8s linear infinite;
 }
 @keyframes floatParticle {
-  0% { transform: translateY(100vh) scale(0.8); opacity: 0; }
-  25% { opacity: 1; }
-  100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+  0% { transform: translateY(100vh) scale(0.5); opacity:0; }
+  25% { opacity:1; }
+  100% { transform: translateY(-10vh) scale(1.2); opacity:0; }
 }
 
-/* --- Structure principale --- */
-.main {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: 40px;
-  margin-top: 50px;
-}
-
+/* === Structure principale === */
+.main { display:flex; flex-direction:row; gap:40px; margin-top:50px; align-items:flex-start; }
 .game {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: rgba(255,255,255,0.1);
-  border-radius: 20px;
-  box-shadow: 0 0 25px rgba(255,255,255,0.3);
-  padding: 20px;
-  backdrop-filter: blur(10px);
+  display:flex; flex-direction:column; align-items:center;
+  background: rgba(255,255,255,0.1); border-radius:20px;
+  box-shadow:0 0 25px rgba(255,255,255,0.3); padding:20px; backdrop-filter:blur(10px);
 }
+h2 { color:#fff; text-shadow:2px 2px 10px #000; font-size:1.8em; margin-bottom:10px; }
+#counter,#cps { color:#FFD700; font-size:1.6em; text-shadow:2px 2px 8px #000; margin-bottom:10px; font-weight:bold; }
+#counter.active { color:#00FF7F; transition: color 0.3s ease; }
 
-h2 {
-  color: #fff;
-  text-shadow: 2px 2px 10px #000;
-  margin-bottom: 10px;
-  font-size: 1.8em;
-}
-
-#counter, #cps {
-  color: #FFD700;
-  font-size: 1.6em;
-  text-shadow: 2px 2px 8px #000;
-  margin-bottom: 10px;
-  font-weight: bold;
-}
-
+/* === Image principale === */
 #image {
-  width: 700px;
-  height: 500px;
-  object-fit: contain;
-  border: 4px solid #fff;
-  border-radius: 15px;
-  cursor: pointer;
-  box-shadow: 0 0 25px rgba(255,255,255,0.3);
+  width:700px; height:500px; object-fit:contain; border:4px solid #fff; border-radius:15px;
+  cursor:pointer; box-shadow:0 0 25px rgba(255,255,255,0.3);
   transition: transform 0.1s ease, box-shadow 0.3s ease;
 }
-#image:active {
-  transform: scale(0.97);
-  box-shadow: 0 0 35px rgba(255,255,255,0.8);
-}
+#image:active { transform: scale(0.97); box-shadow:0 0 35px rgba(255,255,255,0.8); }
 
+/* === Plus-one === */
 .plus-one {
-  position: absolute;
-  color: #00FF7F;
-  font-size: 2em;
-  font-weight: bold;
-  text-shadow: 2px 2px 8px black;
-  animation: floatUp 1s ease-out forwards;
-  user-select: none;
-  pointer-events: none;
+  position:absolute; font-size:2em; font-weight:bold; text-shadow:2px 2px 8px black;
+  animation: floatUp 1s ease-out forwards; user-select:none; pointer-events:none; color:#00FF7F;
 }
-@keyframes floatUp {
-  0% { opacity: 1; transform: translateY(0) scale(1); }
-  100% { opacity: 0; transform: translateY(-80px) scale(1.3); }
+@keyframes floatUp { 0% {opacity:1; transform:translateY(0) scale(1);} 100% {opacity:0; transform:translateY(-80px) scale(1.3);} }
+
+/* === Magasin & Boosts === */
+.store-container { display:flex; flex-direction:row; gap:15px; }
+.store, .boosts {
+  display:flex; flex-direction:column;
+  padding:15px; border-radius:15px; backdrop-filter:blur(8px);
+  box-shadow:0 0 20px rgba(0,0,0,0.3); background: rgba(255,255,255,0.85);
+}
+.store { width:320px; }
+.store h3, .boosts h3 { text-align:center; color:#003366; margin-bottom:10px; font-size:1.3em; text-shadow:1px 1px 2px #fff; }
+.item, .boosts div {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:6px; margin:6px 0; border-radius:10px; transition: transform 0.2s, background 0.2s; position:relative;
+  background: rgba(255,255,255,0.8); cursor:pointer;
+}
+.item:hover, .boosts div:hover { transform: scale(1.05); background: rgba(255,255,255,0.95); }
+
+/* === Building icons === */
+.building-icon-container { position:relative; display:inline-block; }
+.building-icon-container img { width:50px; height:50px; border-radius:5px; margin-left:8px; }
+.building-count { position:absolute; top:-6px; right:-6px; background:#FF4500;
+  color:white; font-size:12px; width:18px; height:18px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; font-weight:bold; pointer-events:none;
 }
 
-/* --- Boutique et boosts côte à côte --- */
-.store-container {
-  display: flex;
-  flex-direction: row;
-  gap: 15px;
-}
-
-.store {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  background: linear-gradient(180deg, #ffffffcc, #87CEFAaa);
-  padding: 15px;
-  border-radius: 15px;
-  width: 320px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.3);
-  backdrop-filter: blur(8px);
-}
-
-.store h3 {
-  text-align: center;
-  color: #003366;
-  font-size: 1.3em;
-  text-shadow: 1px 1px 2px #fff;
-}
-
-.item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 6px 0;
-  padding: 6px;
-  background: rgba(255,255,255,0.8);
-  border-radius: 10px;
-  transition: transform 0.2s, background 0.2s;
-  position: relative;
-}
-.item:hover {
-  transform: scale(1.03);
-  background: rgba(255,255,255,0.95);
-}
-
-.building-icon-container {
-  position: relative;
-  display: inline-block;
-}
-.building-icon-container img {
-  width: 50px;
-  height: 50px;
-  border-radius: 5px;
-  margin-left: 8px;
-}
-.building-count {
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  background: #FF4500;
-  color: white;
-  font-size: 12px;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  pointer-events: none;
-}
-
+/* === Buttons === */
 button, .reset-button {
-  background: linear-gradient(90deg, #007BFF, #00BFFF);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 6px 12px;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 0 10px rgba(0,0,255,0.5);
-  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.3s ease;
+  border:none; border-radius:8px; padding:6px 12px; font-weight:bold; cursor:pointer;
+  color:white; transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.3s ease;
 }
-button:hover, .reset-button:hover {
-  transform: scale(1.1);
-  background: linear-gradient(90deg, #0056b3, #1E90FF);
-  box-shadow: 0 0 20px rgba(0,0,255,0.8);
-}
-.reset-button {
-  background: linear-gradient(90deg, #FF6347, #FF4500);
-  margin-bottom: 10px;
-}
-.reset-button:hover {
-  background: linear-gradient(90deg, #FF4500, #FF6347);
-  box-shadow: 0 0 20px rgba(255,69,0,0.8);
-}
+button:hover, .reset-button:hover { transform: scale(1.1); }
+button { background: linear-gradient(90deg,#007BFF,#00BFFF); box-shadow:0 0 10px rgba(0,0,255,0.5); }
+.reset-button { background: linear-gradient(90deg,#FF6347,#FF4500); margin-bottom:10px; box-shadow:0 0 10px rgba(255,69,0,0.5); }
 
+/* === Boost Tooltip & Active Animation === */
+.tooltip { position:absolute; top:-5px; left:105%; background:rgba(0,0,0,0.8); color:white; padding:4px 6px; border-radius:4px; font-size:12px; white-space:nowrap; display:none; z-index:10; }
+.boosts div:hover .tooltip { display:block; }
+.boosts div.active { background: rgba(0,255,0,0.7); animation: boostPulse 1s infinite alternate; }
+@keyframes boostPulse { 0% {transform: scale(1);} 100% {transform: scale(1.05);} }
+
+/* === Flash === */
 .flash {
-  position: absolute;
-  width: 30px;
-  height: 30px;
+  position:absolute; width:30px; height:30px;
   background: radial-gradient(circle, rgba(255,255,0,0.8) 0%, rgba(255,255,0,0) 70%);
-  border-radius: 50%;
-  pointer-events: none;
-  animation: flashAnim 0.5s ease-out forwards;
-  z-index: 10;
+  border-radius:50%; pointer-events:none; animation: flashAnim 0.5s ease-out forwards; z-index:10;
 }
-@keyframes flashAnim {
-  0% { transform: scale(0); opacity: 1; }
-  100% { transform: scale(2); opacity: 0; }
-}
-
-/* --- Boosts --- */
-.boosts {
-  flex: 0 0 250px;
-  display: flex;
-  flex-direction: column;
-  background: linear-gradient(180deg,#ffe6a1cc,#ffd700aa);
-  padding: 15px;
-  border-radius: 10px;
-  gap: 8px;
-  max-height: 600px;
-  overflow-y: auto;
-  box-shadow: 0 0 15px rgba(0,0,0,0.3);
-}
-.boosts div {
-  padding: 6px;
-  background: rgba(255,255,255,0.8);
-  border-radius: 8px;
-  cursor: pointer;
-  position: relative;
-  transition: transform 0.2s, background 0.2s;
-}
-.boosts div:hover { transform: scale(1.05); background: rgba(255,255,255,0.95); }
-.tooltip {
-  position: absolute;
-  top: -5px;
-  left: 105%;
-  background: rgba(0,0,0,0.8);
-  color: white;
-  padding: 4px 6px;
-  border-radius: 4px;
-  font-size: 12px;
-  white-space: nowrap;
-  display: none;
-  z-index: 10;
-}
-.boosts div:hover .tooltip { display: block; }
-
+@keyframes flashAnim { 0% { transform: scale(0); opacity:1; } 100% { transform: scale(2); opacity:0; } }
 </style>
 </head>
 <body>
+
 <div class="particles"></div>
 
 <div class="main">
   <div class="game">
-    <h2>Bounty Clicker</h2>
+    <h2>Bounty Clicker Pro</h2>
     <div id="counter">Croquettes : 0</div>
     <div id="cps">CPS : 0</div>
     <img id="image" src="image/bounty.jpg" alt="Bounty" onclick="clicBounty(event)">
@@ -284,129 +130,101 @@ button:hover, .reset-button:hover {
   </div>
 </div>
 
-<audio id="clickSound">
-  <source src="audio/Mouse Click Sound Effect.mp3" type="audio/mpeg">
-</audio>
+<audio id="clickSound" src="audio/Mouse Click Sound Effect.mp3"></audio>
 
 <script>
-// =================== Particules =====================
-const particlesContainer = document.querySelector('.particles');
-for (let i = 0; i < 25; i++) {
-  const p = document.createElement('div');
-  p.classList.add('particle');
-  p.style.left = Math.random() * 100 + '%';
-  p.style.animationDelay = (Math.random() * 10) + 's';
-  p.style.opacity = Math.random();
-  p.style.width = p.style.height = Math.random() * 8 + 'px';
+// === Particules flottantes ===
+const particlesContainer=document.querySelector('.particles');
+for(let i=0;i<50;i++){
+  const p=document.createElement('div'); p.className='particle';
+  p.style.left=`${Math.random()*100}%`; p.style.animationDelay=`${Math.random()*10}s`;
+  p.style.opacity=Math.random(); p.style.width=p.style.height=`${Math.random()*8 + 2}px`;
+  p.style.background=`rgba(255,255,${Math.random()*255},${0.5 + Math.random()*0.5})`;
   particlesContainer.appendChild(p);
 }
 
-// =================== Variables =====================
-const images = [
-  'image/bounty.jpg','image/bounty2.jpg','image/bounty3.jpg','image/bounty4.jpg',
-  'image/bounty5.jpg','image/bounty6.jpg','image/bounty7.jpg','image/bounty8.jpg','image/bountygraille.jpg'
-];
-const imgEl = document.getElementById('image');
-const sound = document.getElementById('clickSound');
-const counterEl = document.getElementById('counter');
-const cpsEl = document.getElementById('cps');
-const storeDiv = document.getElementById('storeItems');
-const boostsDiv = document.getElementById('boostsContainer');
+// === Variables ===
+const images=['image/bounty.jpg','image/bounty2.jpg','image/bounty3.jpg','image/bounty4.jpg','image/bounty5.jpg','image/bounty6.jpg','image/bounty7.jpg','image/bounty8.jpg','image/bountygraille.jpg'];
+const imgEl=document.getElementById('image');
+const sound=document.getElementById('clickSound');
+const counterEl=document.getElementById('counter');
+const cpsEl=document.getElementById('cps');
+const storeDiv=document.getElementById('storeItems');
+const boostsDiv=document.getElementById('boostsContainer');
+let lastIndex=-1,count=0,multiplier=1,lastClickTime=0,cps=0;
 
-let lastIndex = -1;
-let count = 0;
-let multiplier = 1;
-let lastClickTime = 0;
-let cps = 0;
-
-const storeItemsData = [
-  {name:"Gamelle de croquette", price:10, mult:1, auto:0, owned:0, icon:'image/gamelle.png'},
-  {name:"Cage à croquette", price:25, mult:0, auto:0, owned:0, icon:'image/cage.png'},
-  {name:"Paquet de croquette", price:50, mult:0, auto:1, owned:0, icon:'image/paquet.png'},
-  {name:"Magasin de croquettes", price:200, mult:0, auto:5, owned:0, icon:'image/magasin.png'},
-  {name:"Supermarcher de croquette", price:500, mult:0, auto:10, owned:0, icon:'image/supermarche.png'},
-  {name:"Hypermarcher de croquettes", price:1000, mult:0, auto:20, owned:0, icon:'image/hypermarcher.png'},
-  {name:"Entrepot de croquettes", price:5000, mult:0, auto:50, owned:0, icon:'image/entrepot.png'},
-  {name:"Usine de croquettes", price:10000, mult:0, auto:100, owned:0, icon:'image/usine.png'},
-  {name:"Temple à croquettes", price:50000, mult:0, auto:300, owned:0, icon:'image/temple.png'},
-  {name:"Dimension de croquettes", price:50000, mult:0, auto:500, owned:0, icon:'image/dimension.png'},
-  {name:"Univers de croquettes", price:100000, mult:0, auto:1000, owned:0, icon:'image/univers.png'},
-  {name:"Galaxy de croquettes", price:500000, mult:0, auto:5000, owned:0, icon:'image/galaxy.png'}
+// === Shop items ===
+const storeItemsData=[
+{name:"Gamelle de croquette",price:10,mult:1,auto:0,owned:0,icon:'image/gamelle.png'},
+{name:"Cage à croquette",price:25,mult:0,auto:0,owned:0,icon:'image/cage.png'},
+{name:"Paquet de croquette",price:50,mult:0,auto:1,owned:0,icon:'image/paquet.png'},
+{name:"Magasin de croquettes",price:200,mult:0,auto:5,owned:0,icon:'image/magasin.png'},
+{name:"Supermarcher de croquette",price:500,mult:0,auto:10,owned:0,icon:'image/supermarche.png'},
+{name:"Hypermarcher de croquettes",price:1000,mult:0,auto:20,owned:0,icon:'image/hypermarcher.png'},
+{name:"Entrepot de croquettes",price:5000,mult:0,auto:50,owned:0,icon:'image/entrepot.png'},
+{name:"Usine de croquettes",price:10000,mult:0,auto:100,owned:0,icon:'image/usine.png'},
+{name:"Temple à croquettes",price:50000,mult:0,auto:300,owned:0,icon:'image/temple.png'},
+{name:"Dimension de croquettes",price:50000,mult:0,auto:500,owned:0,icon:'image/dimension.png'},
+{name:"Univers de croquettes",price:100000,mult:0,auto:1000,owned:0,icon:'image/univers.png'},
+{name:"Galaxy de croquettes",price:500000,mult:0,auto:5000,owned:0,icon:'image/galaxy.png'}
 ];
 
-// =================== Boosts =====================
-const boostsData = [
-  {name:"Bounty doré", desc:"x1.5 sur les clicks", active:false},
-  {name:"Employés compétents", desc:"Double le nombre de croquettes par bâtiment avec employé", active:false},
-  {name:"Marchand louche", desc:"Double ou perte aléatoire de croquettes", active:false},
-  {name:"Alexis de compagnie", desc:"Réduit le prix des 4 premiers bâtiments de 20%", active:false},
-  {name:"Augmentation des droits à Bounty", desc:"Boost la rentabilité des croquettes de 5%", active:false},
-  {name:"Bonus mystère 1", desc:"+10% click", active:false},
-  {name:"Bonus mystère 2", desc:"+20% CPS", active:false},
-  {name:"Bonus mystère 3", desc:"+50 croquettes au hasard", active:false},
-  {name:"Bonus mystère 4", desc:"Double le multiplicateur temporairement", active:false},
-  {name:"Bonus mystère 5", desc:"Réduit le prix du prochain bâtiment", active:false}
+// === Boosts ===
+const boostsData=[
+{name:"Bounty doré",desc:"x1.5 sur les clicks",active:false},
+{name:"Employés compétents",desc:"Double le nombre de croquettes par bâtiment avec employé",active:false},
+{name:"Marchand louche",desc:"Double ou perte aléatoire de croquettes",active:false},
+{name:"Alexis de compagnie",desc:"Réduit le prix des 4 premiers bâtiments de 20%",active:false},
+{name:"Augmentation des droits à Bounty",desc:"Boost la rentabilité des croquettes de 5%",active:false},
+{name:"Bonus mystère 1",desc:"+10% click",active:false},
+{name:"Bonus mystère 2",desc:"+20% CPS",active:false},
+{name:"Bonus mystère 3",desc:"+50 croquettes au hasard",active:false},
+{name:"Bonus mystère 4",desc:"Double le multiplicateur temporairement",active:false},
+{name:"Bonus mystère 5",desc:"Réduit le prix du prochain bâtiment",active:false}
 ];
 
-function afficherBoosts() {
-  boostsDiv.innerHTML = '';
-  boostsData.forEach((b, i)=>{
-    const div = document.createElement('div');
-    div.textContent = b.name;
-    const tooltip = document.createElement('span');
-    tooltip.className='tooltip';
-    tooltip.textContent = b.desc;
+// === Afficher boosts ===
+function afficherBoosts(){
+  boostsDiv.innerHTML='';
+  boostsData.forEach((b)=>{
+    const div=document.createElement('div'); div.textContent=b.name;
+    const tooltip=document.createElement('span'); tooltip.className='tooltip'; tooltip.textContent=b.desc;
     div.appendChild(tooltip);
-    div.onclick = ()=>{
-      b.active = !b.active;
-      div.style.background = b.active ? 'rgba(0,255,0,0.7)' : 'rgba(255,255,255,0.8)';
+    div.onclick=()=>{
+      b.active=!b.active;
+      div.classList.toggle('active',b.active);
+      updateCounter();
     };
     boostsDiv.appendChild(div);
   });
 }
 
-// =================== Jeu =====================
-function chargerJeu() {
-  const saved = localStorage.getItem('bountySave');
+// === Jeu ===
+function chargerJeu(){
+  const saved=localStorage.getItem('bountySave');
   if(saved){
-    const data = JSON.parse(saved);
-    count = data.count;
-    multiplier = data.multiplier;
-    data.storeItems.forEach((itemSaved, i)=>{
-      storeItemsData[i].owned = itemSaved.owned;
-      storeItemsData[i].price = itemSaved.price;
-    });
+    const data=JSON.parse(saved);
+    count=data.count; multiplier=data.multiplier;
+    data.storeItems.forEach((itemSaved,i)=>{ storeItemsData[i].owned=itemSaved.owned; storeItemsData[i].price=itemSaved.price; });
   }
 }
-
-function sauvegarderJeu() {
-  const saveData = {
-    count: count,
-    multiplier: multiplier,
-    storeItems: storeItemsData.map(item=>({owned:item.owned, price:item.price}))
-  };
-  localStorage.setItem('bountySave', JSON.stringify(saveData));
+function sauvegarderJeu(){
+  const saveData={ count, multiplier, storeItems: storeItemsData.map(item=>({owned:item.owned,price:item.price})) };
+  localStorage.setItem('bountySave',JSON.stringify(saveData));
 }
 
-function updateStore() {
-  storeDiv.innerHTML = '';
+function updateStore(){
+  storeDiv.innerHTML='';
   storeItemsData.forEach((item,index)=>{
-    const itemDiv=document.createElement('div');
-    itemDiv.className='item';
-    const nameSpan=document.createElement('span');
-    nameSpan.textContent=`${item.name} (${Math.floor(item.price)} croquettes)`;
-    const btn=document.createElement('button');
-    btn.textContent='Acheter';
-    btn.disabled = count < item.price;
-    btn.onclick = ()=>acheterItem(index);
-    const iconContainer=document.createElement('div');
-    iconContainer.className='building-icon-container';
+    const itemDiv=document.createElement('div'); itemDiv.className='item';
+    const nameSpan=document.createElement('span'); nameSpan.textContent=`${item.name} (${Math.floor(item.price)} croquettes)`;
+    const btn=document.createElement('button'); btn.textContent='Acheter'; btn.disabled=count<item.price;
+    btn.onclick=()=>acheterItem(index);
+    const iconContainer=document.createElement('div'); iconContainer.className='building-icon-container';
     const img=document.createElement('img'); img.src=item.icon;
-    const countDiv=document.createElement('div');
-    countDiv.className='building-count';
-    countDiv.textContent=item.owned;
-    iconContainer.appendChild(img); iconContainer.appendChild(countDiv);
-    itemDiv.appendChild(nameSpan); itemDiv.appendChild(btn); itemDiv.appendChild(iconContainer);
+    const countDiv=document.createElement('div'); countDiv.className='building-count'; countDiv.textContent=item.owned;
+    iconContainer.append(img,countDiv);
+    itemDiv.append(nameSpan,btn,iconContainer);
     storeDiv.appendChild(itemDiv);
   });
 }
@@ -416,92 +234,78 @@ function acheterItem(index){
   if(count>=item.price){
     count-=item.price;
     if(item.mult>0) multiplier+=item.mult;
-    item.owned+=1;
+    if(boostsData[3].active && index<4) item.price*=0.8;
+    item.owned++;
     item.price*=1.15;
-
-    const itemDiv=storeDiv.children[index];
-    const flash=document.createElement('div');
-    flash.className='flash';
-    flash.style.left=(itemDiv.offsetWidth/2-15)+'px';
-    flash.style.top=(itemDiv.offsetHeight/2-15)+'px';
-    itemDiv.appendChild(flash);
-    setTimeout(()=>flash.remove(),500);
-
-    updateCounter();
-    updateStore();
-    sauvegarderJeu();
+    updateCounter(); updateStore(); sauvegarderJeu();
   }
 }
 
-function pickRandomIndex(){
-  let idx;
-  do { idx=Math.floor(Math.random()*images.length); } while(idx===lastIndex);
-  return idx;
-}
-
-function changerImage(){
-  const idx=pickRandomIndex();
-  imgEl.src=images[idx];
-  lastIndex=idx;
-}
-
-function jouerSon(){
-  sound.currentTime=0; sound.volume=1.0; sound.play().catch(()=>{});
-}
-
-function afficherPlusUn(event){
-  const plusOne=document.createElement('div');
-  plusOne.className='plus-one';
-  plusOne.textContent=`+${multiplier}`;
-  const rect=imgEl.getBoundingClientRect();
-  const x=event.clientX-rect.left;
-  const y=event.clientY-rect.top;
-  plusOne.style.left=`${x-10}px`;
-  plusOne.style.top=`${y-20}px`;
-  imgEl.parentElement.appendChild(plusOne);
-  setTimeout(()=>plusOne.remove(),1000);
-}
-
+// === Clic bounty avec explosion ===
 function clicBounty(event){
-  const now=Date.now();
-  if(now-lastClickTime<300) return;
-  lastClickTime=now;
-
-  let bonus=multiplier;
-  if(boostsData[0].active) bonus*=1.5;
-  count+=bonus;
-  updateCounter();
-  changerImage();
-  jouerSon();
-  afficherPlusUn(event);
-  updateStore();
-  sauvegarderJeu();
+  const now=Date.now(); if(now-lastClickTime<300) return; lastClickTime=now;
+  let bonus=multiplier; if(boostsData[0].active) bonus*=1.5; if(boostsData[2].active) bonus=Math.random()<0.5?0:bonus*2;
+  count+=bonus; updateCounter(); changerImage(); jouerSon(); afficherPlusUn(event); explosionParticles(event); updateStore(); sauvegarderJeu();
+}
+function changerImage(){ let idx; do{idx=Math.floor(Math.random()*images.length);}while(idx===lastIndex); lastIndex=idx; imgEl.src=images[idx]; }
+function jouerSon(){ sound.currentTime=0; sound.play().catch(()=>{}); }
+function afficherPlusUn(event){
+  const plusOne=document.createElement('div'); plusOne.className='plus-one';
+  const rect=imgEl.getBoundingClientRect();
+  plusOne.style.left=`${event.clientX-rect.left-10}px`; plusOne.style.top=`${event.clientY-rect.top-20}px`;
+  let bonus=multiplier; if(boostsData[0].active) bonus*=1.5; if(boostsData[2].active) bonus=Math.random()<0.5?0:bonus*2;
+  plusOne.textContent=`+${Math.floor(bonus)}`;
+  imgEl.parentElement.appendChild(plusOne); setTimeout(()=>plusOne.remove(),1000);
 }
 
+// === Particules d’explosion ===
+function explosionParticles(event){
+  for(let i=0;i<10;i++){
+    const p=document.createElement('div'); p.className='particle';
+    p.style.left=`${event.clientX-5 + Math.random()*10}px`;
+    p.style.top=`${event.clientY-5 + Math.random()*10}px`;
+    p.style.width=p.style.height=`${Math.random()*6 + 4}px`;
+    p.style.background=`rgba(255,255,0,${0.5+Math.random()*0.5})`;
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),600);
+  }
+}
+
+// === Compteur & CPS ===
 function updateCounter(){
   counterEl.textContent=`Croquettes : ${Math.floor(count)} (x${multiplier})`;
-  cps=calculCPS();
-  cpsEl.textContent=`CPS : ${cps}`;
+  counterEl.classList.toggle('active',boostsData[0].active);
+  cps=calculCPS(); cpsEl.textContent=`CPS : ${Math.floor(cps)}`;
 }
-
 function calculCPS(){
-  let total=0;
-  storeItemsData.forEach(item=>{
-    if(item.auto>0 && item.owned>0) total+=item.auto*item.owned;
-  });
-  return total;
+  return storeItemsData.reduce((acc,item)=>{
+    if(item.auto>0 && item.owned>0){
+      let gain=item.auto*item.owned;
+      if(boostsData[1].active) gain*=2;
+      if(boostsData[4].active) gain*=1.05;
+      acc+=gain;
+    }
+    return acc;
+  },0);
 }
 
 function resetJeu(){ localStorage.removeItem('bountySave'); location.reload(); }
 
+// === CPS automatique ===
 setInterval(()=>{
-  storeItemsData.forEach(item=>{ if(item.auto>0 && item.owned) count+=item.auto*item.owned; });
+  storeItemsData.forEach(item=>{
+    if(item.auto && item.owned){
+      let gain=item.auto*item.owned;
+      if(boostsData[1].active) gain*=2;
+      if(boostsData[4].active) gain*=1.05;
+      count+=gain;
+    }
+  });
   updateCounter(); updateStore();
 },1000);
-
 setInterval(sauvegarderJeu,60000);
 
-// =================== Initialisation =====================
+// === Initialisation ===
 changerImage(); chargerJeu(); updateCounter(); updateStore(); afficherBoosts();
 </script>
 </body>
