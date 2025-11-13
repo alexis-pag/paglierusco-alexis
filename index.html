@@ -2,7 +2,8 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <title>Accueil</title>
+  <title>Accueil Bounty</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <style>
     /* Fond plein écran */
     body {
@@ -19,7 +20,7 @@
       font-family: 'Segoe UI', sans-serif;
     }
 
-    /* Animation du titre */
+    /* Titre animé */
     h2 {
       color: #FFD700;
       text-shadow: 2px 2px 10px black;
@@ -29,19 +30,20 @@
       animation: bounce 2s infinite;
     }
 
-    /* Animation de texte */
+    /* Paragraphes animés */
     p {
       color: #FFFFFF;
       text-shadow: 1px 1px 5px black;
       font-size: 1.2em;
       margin: 5px 0;
       animation: fadeIn 2s ease-in-out;
+      text-align: center;
     }
 
-    /* Animation boutons */
+    /* Boutons stylisés */
     button {
       margin: 10px;
-      padding: 10px 20px;
+      padding: 12px 25px;
       font-weight: bold;
       border-radius: 10px;
       border: none;
@@ -55,11 +57,11 @@
     }
 
     button:hover {
-      transform: scale(1.2) rotate(-2deg);
+      transform: scale(1.1) rotate(-2deg);
       background: linear-gradient(90deg, #0056b3, #1E90FF);
     }
 
-    /* Animation image */
+    /* Image Bounty */
     #image {
       width: 400px;
       height: 300px;
@@ -91,26 +93,41 @@
       0% { transform: translateY(0); }
       100% { transform: translateY(-8px); }
     }
+
+    /* Responsive */
+    @media(max-width: 500px){
+      #image {
+        width: 90%;
+        height: auto;
+      }
+      button {
+        width: 80%;
+        font-size: 1em;
+        padding: 10px;
+      }
+    }
   </style>
 </head>
 <body>
   <h2>Bienvenue sur le site de Bounty !</h2>
-  <p>Cliquer pour entrer sur le site (zoom 100 %).</p>
-  <p>Dans ce site, vous trouverez des images de Bounty (mon lapin)</p>
-  
-  <!-- Boutons -->
-  <button onclick="ouvrirPage1()">Entrer</button>
-  <button onclick="ouvrirPage2()">Voir un autre site</button>
+  <p>Cliquer pour entrer sur le site (zoom 100%).</p>
+  <p>Vous trouverez ici des images de Bounty (mon lapin).</p>
 
+  <!-- Boutons avec liens absolus -->
+  <button onclick="ouvrirPage1()">Entrer (Version Desktop)</button>
+  <button onclick="ouvrirPage2()">Voir la Version Mobile</button>
+
+  <!-- Image décorative -->
   <img id="image" src="image/bounty.jpg" alt="Image Bounty">
 
   <script>
+    // Liens absolus GitHub Pages
     function ouvrirPage1() {
       window.location.href = 'https://alexis-pag.github.io/paglierusco-alexis/site.html';
     }
 
     function ouvrirPage2() {
-      window.location.href = 'https://alexis-pag.github.io/paglierusco-alexis/site-mobile.html'; // Remplace par ton autre site
+      window.location.href = 'https://alexis-pag.github.io/paglierusco-alexis/site-mobile.html';
     }
   </script>
 </body>
