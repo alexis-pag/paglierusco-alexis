@@ -170,7 +170,7 @@
         const itemDiv = document.createElement('div');
         itemDiv.className = 'item';
         const nameSpan = document.createElement('span');
-        nameSpan.textContent = `${item.name} (${item.price} croquettes)`;
+        nameSpan.textContent = `${item.name} (${Math.floor(item.price)} croquettes)`;
         const btn = document.createElement('button');
         btn.textContent = 'Acheter';
         btn.disabled = count < item.price;
@@ -186,6 +186,8 @@
       if(count >= item.price){
         count -= item.price;
         multiplier += item.mult;
+        // Augmente le prix de 15% à chaque achat
+        item.price *= 1.15;
         updateCounter();
         updateStore();
       }
@@ -209,7 +211,7 @@
     }
 
     function updateCounter() {
-      counterEl.textContent = `Bounty cliqué : ${count} (x${multiplier})`;
+      counterEl.textContent = `Bounty cliqué : ${Math.floor(count)} (x${multiplier})`;
     }
 
     function changerImage() {
