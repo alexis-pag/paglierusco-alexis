@@ -5,7 +5,7 @@
   <title>bounty</title>
   <style>
     body {
-      background-image: url('image/image.png'); /* ton fond d'écran */
+      background-image: url('image/image.png');
       background-size: cover;
       background-repeat: no-repeat;
       background-position: center;
@@ -18,7 +18,6 @@
       overflow: hidden;
     }
 
-    /* Boutons en haut à droite */
     .top-buttons {
       position: absolute;
       top: 15px;
@@ -50,9 +49,9 @@
     }
 
     #image {
-      width: 700px;         /* image grande */
-      height: 500px;        /* taille fixe */
-      object-fit: contain;  /* garde le bon ratio */
+      width: 700px;
+      height: 500px;
+      object-fit: contain;
       border: 3px solid #fff;
       cursor: pointer;
       box-shadow: 0 0 25px rgba(0,0,0,0.7);
@@ -67,16 +66,14 @@
 <body>
   <!-- Boutons en haut à droite -->
   <div class="top-buttons">
-    <button class="btn" onclick="window.open('https://tonlien1.com', '_blank')">Lien 1</button>
-    <button class="btn" onclick="window.open('https://tonlien2.com', '_blank')">Lien 2</button>
+    <button class="btn" onclick="window.open('https://tonlien1.com', '_blank')">🐰 Page principale</button>
+    <button class="btn" onclick="window.open('https://tonlien2.com', '_blank')">📸 Galerie</button>
   </div>
 
   <h2>Appuie sur l'image pour voir d'autres photos de Bounty</h2>
 
-  <!-- Image principale -->
   <img id="image" src="" alt="image aléatoire" onclick="changerImageEtJouerSon()">
 
-  <!-- Son -->
   <audio id="clickSound">
     <source src="audio/Mouse Click Sound Effect.mp3" type="audio/mpeg">
   </audio>
@@ -119,7 +116,6 @@
       });
     }
 
-    // Affiche une première image au chargement
     changerImageEtJouerSon();
   </script>
 </body>
