@@ -41,11 +41,11 @@
       font-size: 1.5em;
     }
 
-    #counter {
+    #counter, #cps {
       color: white;
-      font-size: 2em;
+      font-size: 1.8em;
       text-shadow: 1px 1px 5px black;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
 
     #image {
@@ -159,6 +159,7 @@
     <div class="game">
       <h2>Appuie sur Bounty pour le faire apparaître !</h2>
       <div id="counter">Bounty cliqué : 0</div>
+      <div id="cps">CPS : 0</div> <!-- Compteur de clics par seconde -->
       <img id="image" src="" alt="image aléatoire" onclick="clicBounty(event)">
     </div>
 
@@ -182,14 +183,15 @@
     const imgEl = document.getElementById('image');
     const sound = document.getElementById('clickSound');
     const counterEl = document.getElementById('counter');
+    const cpsEl = document.getElementById('cps'); // élément CPS
     const storeDiv = document.getElementById('storeItems');
 
     let lastIndex = -1;
     let count = 0;
     let multiplier = 1;
     let lastClickTime = 0; // limite clics
+    let cps = 0; // clics par seconde
 
-    // Magasin : tu choisis toi-même les images des bâtiments ici
     const storeItemsData = [
       {name:"Gamelle de croquette", price:10, mult:1, auto:0, owned:0, icon:'image/gamelle.png'},
       {name:"Paquet de croquette", price:50, mult:0, auto:1, owned:0, icon:'image/paquet.png'},
@@ -255,7 +257,7 @@
       const countDiv = itemDiv.querySelector('.building-count');
       if(countDiv){
         countDiv.style.animation = 'none';
-        countDiv.offsetHeight; // reflow pour réinitialiser l'animation
+        countDiv.offsetHeight;
         countDiv.style.animation = 'pop 0.3s ease-out';
       }
     }
@@ -283,6 +285,19 @@
 
     function updateCounter() {
       counterEl.textContent = `Bounty cliqué : ${Math.floor(count)} (x${multiplier})`;
+      cps = calculCPS();
+      cpsEl.textContent = `CPS : ${cps}`;
+    }
+
+    function calculCPS() {
+      // Somme de tous les auto clics par seconde
+      let total = 0;
+      storeItemsData.forEach(item => {
+        if(item.auto > 0 && item.owned > 0){
+          total += item.auto * item.owned;
+        }
+      });
+      return total;
     }
 
     function changerImage() {
@@ -312,9 +327,11 @@
 
     // Clics automatiques
     setInterval(() => {
+      let cpsUpdate = 0;
       storeItemsData.forEach(item => {
         if(item.auto > 0 && item.owned){
           count += item.auto * item.owned;
+          cpsUpdate += item.auto * item.owned;
         }
       });
       updateCounter();
