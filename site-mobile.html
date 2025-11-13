@@ -29,21 +29,19 @@
   }
 
   #image {
-    width: 400px;       
-    height: 300px;      
+    width: 400px;
+    height: 300px;
     object-fit: contain;
     border: 2px solid #fff;
-    box-shadow: 0 0 15px rgba(0,0,0,0.5);
     margin-top: 20px;
-    transition: none !important;   /* supprime toute animation */
-    transform: none !important;    /* supprime tout scale */
-    cursor: default;               /* pas de curseur */
-    touch-action: none;            /* désactive effet tactile mobile */
-  }
 
-  #image:hover {
+    /* Empêche tout mouvement ou effet au tap sur mobile */
+    transition: none !important;
     transform: none !important;
-    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    cursor: default;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
   }
 
   #score {
