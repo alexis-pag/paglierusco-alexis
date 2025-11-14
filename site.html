@@ -1,7 +1,7 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <title>Bounty Clicker</title>
 <link rel="stylesheet" href="style.css">
 </head>
@@ -13,12 +13,12 @@
     <h2>Bounty Clicker</h2>
     <div id="counter">Croquettes : 0</div>
     <div id="cps">CPS : 0</div>
-    <img id="image" src="image/bounty.jpg" alt="Bounty">
+    <img id="image" src="image/bounty.jpg" alt="Bounty" onclick="clicBounty(event)">
   </div>
 
   <div class="store-container">
     <div class="store">
-      <button class="reset-button" id="resetButton">Réinitialiser</button>
+      <button class="reset-button" onclick="resetJeu()">Réinitialiser</button>
       <h3>Magasin de croquettes</h3>
       <div id="storeItems"></div>
     </div>
@@ -33,9 +33,8 @@
   <source src="audio/Mouse Click Sound Effect.mp3" type="audio/mpeg">
 </audio>
 
-<!-- Scripts externes -->
-<script src="script/game.js"></script>
-<script src="script/boutique.js"></script>
-<script src="script/boosts.js"></script>
+<script src="game.js"></script>
+<script src="shop.js"></script>
+<script src="boosts.js"></script>
 </body>
 </html>
