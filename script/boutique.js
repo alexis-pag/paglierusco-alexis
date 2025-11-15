@@ -73,7 +73,7 @@
 
       // bonus par clic pour Gamelle/Cage
       if (item.bonusClick) {
-        window.BountyGame.bonusClick += item.bonusClick;
+        window.BountyGame.bonusClick = item.bonusClick; // remplace au lieu d’additionner
       }
 
       // multiplicateur normal
@@ -128,9 +128,8 @@
     const img = document.getElementById('image');
     if (img) {
       img.addEventListener('click', () => {
-        const gainBase = 1;
-        const bonus = window.BountyGame.bonusClick || 0;
-        const totalGain = (gainBase + bonus) * (window.BountyGame.multiplier || 1);
+        const gain = window.BountyGame.bonusClick > 0 ? window.BountyGame.bonusClick : 1;
+        const totalGain = gain * (window.BountyGame.multiplier || 1);
         window.BountyGame.count += totalGain;
         updateCounterUI && updateCounterUI();
       });
