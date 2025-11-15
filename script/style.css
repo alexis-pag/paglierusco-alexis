@@ -110,41 +110,70 @@ html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,Poppins,Arial;bac
   pointer-events:none;
   z-index:10;
 }
-
 .tooltip::after {
   content:'';
   position:absolute;
-  top:100%; /* triangle sous le tooltip */
+  top:100%;
   left:50%;
   transform:translateX(-50%);
   border-width:6px;
   border-style:solid;
   border-color: rgba(2,6,20,0.95) transparent transparent transparent;
 }
-
 .btn.buy:hover .tooltip {
   opacity:1;
   transform:translateX(-50%) translateY(0);
 }
 
-/* boutique compacte déroulante */
+/* animated boost appear */
+.boost-appear{animation:boostPop .8s cubic-bezier(.2,.9,.2,1)}
+@keyframes boostPop{0%{transform:scale(.3);opacity:0;filter:brightness(3)}60%{transform:scale(1.08)}100%{transform:scale(1);opacity:1;filter:none}}
+
+/* active boost visual */
+.boost-active{box-shadow:0 0 18px rgba(155,255,122,0.16);border:1px solid rgba(155,255,122,0.18)}
+
+/* bottom bar */
+.bottom-bar{position:fixed;left:0;right:0;bottom:14px;display:flex;justify-content:center;pointer-events:none}
+.bottom-bar .btn{pointer-events:all}
+
+/* ---------- Boutique déroulante ---------- */
 .shop {
-  width: 60px; /* largeur repliée */
+  width: 360px; /* visible par défaut */
   overflow: hidden;
   transition: width 0.3s ease;
   cursor: pointer;
+  position: relative;
 }
-.shop.open {
-  width: 360px; /* largeur normale */
+.shop.closed {
+  width: 60px; /* repliée */
 }
-.shop .panel-header,
-.shop .panel-main {
-  opacity: 0;
-  transition: opacity 0.3s ease;
+
+/* flèche indicatrice */
+.shop-toggle {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 16px;
+  height: 16px;
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: rotate(45deg);
+  transition: transform 0.3s ease;
   pointer-events: none;
 }
-.shop.open .panel-header,
-.shop.open .panel-main {
+.shop.closed .shop-toggle {
+  transform: rotate(-135deg);
+}
+
+/* panel header et contenu */
+.shop .panel-header,
+.shop .panel-main {
   opacity: 1;
+  transition: opacity 0.3s ease;
   pointer-events: all;
+}
+.shop.closed .panel-header,
+.shop.closed .panel-main {
+  opacity: 0;
+  pointer-events: none;
 }
