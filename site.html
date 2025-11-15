@@ -6,11 +6,13 @@
   <title>Bounty Clicker — Néon</title>
   <link rel="stylesheet" href="script/style.css">
 </head>
+
 <body>
   <div class="bg-animated"></div>
 
   <div class="layout">
-    <!-- Left: Clicker -->
+
+    <!-- LEFT : CLICKER -->
     <section class="panel clicker">
       <header class="panel-header">
         <h1>Bounty Clicker</h1>
@@ -19,6 +21,7 @@
           <div id="cps">CPS : 0</div>
         </div>
       </header>
+
       <main class="panel-main">
         <div class="image-wrap">
           <img id="image" src="image/bounty.jpg" alt="Bounty">
@@ -26,21 +29,23 @@
       </main>
     </section>
 
-    <!-- Middle: Shop -->
-    <aside class="panel shop" id="shopPanel">
+    <!-- MIDDLE : SHOP avec scroll -->
+    <aside class="panel shop">
       <header class="panel-header"><h2>Boutique</h2></header>
-      <div class="panel-main">
+
+      <div class="panel-main shop-scroll">
         <div id="storeItems" class="list"></div>
       </div>
     </aside>
 
-    <!-- Right: Boosts -->
+    <!-- RIGHT : BOOSTS -->
     <aside class="panel boosts">
       <header class="panel-header"><h2>Boosts & Bonus</h2></header>
-      <div class="panel-main">
+      <div class="panel-main boosts-scroll">
         <div id="boostsContainer" class="list"></div>
       </div>
     </aside>
+
   </div>
 
   <footer class="bottom-bar">
@@ -53,16 +58,5 @@
   <script src="script/boutique.js" defer></script>
   <script src="script/boost.js" defer></script>
   <script src="script/main.js" defer></script>
-
-  <!-- Menu déroulant à la molette -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const shopPanel = document.getElementById('shopPanel');
-      shopPanel.addEventListener('wheel', (e) => {
-        e.preventDefault();
-        shopPanel.classList.toggle('open');
-      });
-    });
-  </script>
 </body>
 </html>
