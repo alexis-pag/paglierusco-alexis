@@ -1,96 +1,125 @@
-/* boosts.js
-   - defines boostsData, afficherBoosts, and random spawn/temporary availability
+/* boost.js
+   - boostsData with price & permanent flag
+   - afficherBoosts, spawn/respawn logic, purchase (permanent)
 */
 (() => {
   window.boostsData = [
-    {name:"Bounty doré",desc:"x1.5 sur les clicks",active:false,available:true},
-    {name:"Employés compétents",desc:"Double le nombre de croquettes par bâtiment",active:false,available:true},
-    {name:"Marchand louche",desc:"Double ou perte aléatoire de croquettes",active:false,available:true},
-    {name:"Alexis de compagnie",desc:"Réduit le prix des 4 premiers bâtiments de 20%",active:false,available:true},
-    {name:"Augmentation des droits à Bounty",desc:"Boost la rentabilité des croquettes de 5%",active:false,available:true},
-    {name:"Bonus mystère 1",desc:"+10% click",active:false,available:true},
-    {name:"Bonus mystère 2",desc:"+20% CPS",active:false,available:true},
-    {name:"Bonus mystère 3",desc:"+50 croquettes au hasard",active:false,available:true},
-    {name:"Bonus mystère 4",desc:"Double le multiplicateur temporairement",active:false,available:true},
-    {name:"Bonus mystère 5",desc:"Réduit le prix du prochain bâtiment",active:false,available:true}
+    { name: "Bounty doré", desc: "x1.5 sur les clicks", price: 500, active: false, available: false, permanent: false },
+    { name: "Employés compétents", desc: "Double le CPS des bâtiments", price: 800, active: false, available: false, permanent: false },
+    { name: "Marchand louche", desc: "Double ou perte 50/50", price: 1200, active: false, available: false, permanent: false },
+    { name: "Alexis de compagnie", desc: "Réduit le prix des 4 premiers bâtiments de 20%", price: 1500, active: false, available: false, permanent: false },
+    { name: "Augmentation des droits à Bounty", desc: "Boost la rentabilité de 5%", price: 2000, active: false, available: false, permanent: false },
+    { name: "Bonus mystère 1", desc: "+10% clic", price: 1000, active: false, available: false, permanent: false },
+    { name: "Bonus mystère 2", desc: "+20% CPS", price: 2000, active: false, available: false, permanent: false },
+    { name: "Bonus mystère 3", desc: "+50 croquettes aléatoires", price: 500, active: false, available: false, permanent: false },
+    { name: "Bonus mystère 4", desc: "Double le multiplicateur temporairement", price: 3500, active: false, available: false, permanent: false },
+    { name: "Bonus mystère 5", desc: "Réduit le prix du prochain bâtiment", price: 2500, active: false, available: false, permanent: false }
   ];
 
   const boostsDiv = document.getElementById('boostsContainer');
 
-  function makeBoostNode(b, i){
+  function makeBoostNode(b, idx) {
     const root = document.createElement('div');
-    root.className = 'boost';
+    root.className = 'boost-node';
     root.style.display = b.available ? 'flex' : 'none';
+    if (b.active || b.permanent) root.classList.add('boost-active');
+    if (b.available && !b.active) root.classList.add('boost-appear');
 
-    const tleft = document.createElement('div'); tleft.innerHTML = `<strong>${b.name}</strong>`;
-    const tright = document.createElement('div');
-    const btn = document.createElement('button'); btn.textContent = b.active ? 'ON' : 'Activer';
-    btn.style.padding = '6px 10px';
+    const left = document.createElement('div'); left.innerHTML = `<strong>${b.name}</strong><div style="font-size:12px;color:rgba(255,255,255,0.75)">Prix: ${b.price}</div>`;
+    const right = document.createElement('div');
+    const btn = document.createElement('button'); btn.className = 'btn activate'; btn.textContent = b.active ? 'Actif' : 'Acheter';
+
+    btn.disabled = !(window.BountyGame && window.BountyGame.count >= b.price);
     btn.addEventListener('click', (ev) => {
       ev.stopPropagation();
-      b.active = !b.active;
-      if(window.afficherBoosts) window.afficherBoosts();
-      if(window.sauvegarderJeu) window.sauvegarderJeu();
+      purchaseBoost(idx);
     });
 
     const tooltip = document.createElement('div'); tooltip.className = 'tooltip'; tooltip.textContent = b.desc;
-    root.appendChild(tleft); root.appendChild(tright); tright.appendChild(btn); root.appendChild(tooltip);
-
-    // visual for active
-    root.style.borderLeft = b.active ? `4px solid rgba(0,200,120,0.95)` : 'none';
+    root.appendChild(left); right.appendChild(btn); root.appendChild(right); root.appendChild(tooltip);
     return root;
   }
 
-  function afficherBoosts(){
+  function afficherBoosts() {
     boostsDiv.innerHTML = '';
-    window.boostsData.forEach((b,i)=>{
-      const node = makeBoostNode(b,i);
-      boostsDiv.appendChild(node);
+    window.boostsData.forEach((b, i) => {
+      boostsDiv.appendChild(makeBoostNode(b, i));
     });
   }
 
-  // spawn algorithm:
-  // periodically choose 1-2 boosts to make available (others hidden),
-  // each available boost auto-disappears after a duration; occasional "rare" flash.
-  function scheduleSpawn(){
-    // hide all then pick random subset
-    window.boostsData.forEach(b => b.available = false);
+  function purchaseBoost(idx) {
+    const b = window.boostsData[idx];
+    if (!b) return;
+    if (window.BountyGame.count >= b.price) {
+      // pay & make permanent
+      window.BountyGame.count -= b.price;
+      b.active = true;
+      b.permanent = true;
+      b.available = false;
 
-    // number available: 1 or 2 (rarely 3)
-    const n = (Math.random() < 0.07) ? 3 : ((Math.random() < 0.25) ? 2 : 1);
-    const pool = window.boostsData.slice();
-    for(let i=0;i<n;i++){
-      if(pool.length === 0) break;
-      const idx = Math.floor(Math.random()*pool.length);
-      const chosen = pool.splice(idx,1)[0];
+      // apply immediate effects if some boosts give instant reward
+      if (b.name.includes('Bonus mystère 3')) {
+        window.BountyGame.count += 50; // immediate 50 croquettes
+      }
+      if (window.updateCounterUI) window.updateCounterUI();
+      if (window.sauvegarderJeu) window.sauvegarderJeu();
+      if (window.updateStore) window.updateStore();
+      afficherBoosts();
+    } else {
+      // not enough
+      const old = document.body.style.filter;
+      document.body.style.filter = 'brightness(.85)';
+      setTimeout(()=>document.body.style.filter = old, 220);
+    }
+  }
+
+  // spawn algorithm: show 1-2 boosts available for a limited time, then hide if not bought
+  function scheduleSpawn() {
+    // hide all availables first (except permanent ones)
+    window.boostsData.forEach(b => { if (!b.permanent) b.available = false; });
+
+    const pool = window.boostsData.filter(b => !b.permanent);
+    if (pool.length === 0) return;
+
+    // choose how many to show: mostly 1, sometimes 2, rarely 3
+    const r = Math.random();
+    let n = 1;
+    if (r < 0.18) n = 2;
+    if (r < 0.05) n = 3;
+
+    // pick n distinct
+    for (let i = 0; i < n; i++) {
+      if (pool.length === 0) break;
+      const idx = Math.floor(Math.random() * pool.length);
+      const chosen = pool.splice(idx, 1)[0];
       chosen.available = true;
-      // rare visual flash flag (we'll style node on render if chosen.rare)
-      if(Math.random() < 0.08) chosen.rare = true; else chosen.rare = false;
+      // rare visual flag
+      chosen.rare = Math.random() < 0.08;
 
-      // schedule disappearance for this chosen
-      const duration = 10000 + Math.random()*25000; // 10-35s
+      // schedule disappearance if not bought
+      const timeVisible = 15000 + Math.random() * 30000; // 15 - 45s
       setTimeout(() => {
-        chosen.available = false;
-        chosen.rare = false;
-        if(window.afficherBoosts) window.afficherBoosts();
-      }, duration);
+        if (!chosen.permanent && chosen.available) {
+          chosen.available = false;
+          if (window.afficherBoosts) window.afficherBoosts();
+        }
+      }, timeVisible);
     }
 
-    if(window.afficherBoosts) window.afficherBoosts();
+    if (window.afficherBoosts) window.afficherBoosts();
 
-    // schedule next spawn after 12-40s
-    const nextIn = 12000 + Math.random()*28000;
+    // schedule next spawn between 20s and 90s
+    const nextIn = 20000 + Math.random() * 70000;
     setTimeout(scheduleSpawn, nextIn);
   }
 
-  // initial render + start spawns
-  document.addEventListener('DOMContentLoaded', ()=>{
-    setTimeout(()=> {
+  // initial render & start spawns on DOM ready
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
       afficherBoosts();
-      setTimeout(scheduleSpawn, 2000 + Math.random()*3000);
-    }, 60);
+      setTimeout(scheduleSpawn, 1200 + Math.random() * 2600);
+    }, 40);
   });
 
-  // expose function
   window.afficherBoosts = afficherBoosts;
 })();
