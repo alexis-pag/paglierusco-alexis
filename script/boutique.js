@@ -122,10 +122,10 @@
       img.addEventListener('click', () => {
         const baseClick = 1;
 
-        // calcul des bonus cumulés des 2 premiers items
+        // calcul des bonus cumulés pour Gamelle et Cage
         let bonusClick = 0;
-        if (storeItemsData[0].owned) bonusClick += storeItemsData[0].owned * storeItemsData[0].bonusClick; // Gamelle
-        if (storeItemsData[1].owned) bonusClick += storeItemsData[1].owned * storeItemsData[1].bonusClick; // Cage
+        if (storeItemsData[0].owned) bonusClick += storeItemsData[0].owned * (storeItemsData[0].bonusClick || 0);
+        if (storeItemsData[1].owned) bonusClick += storeItemsData[1].owned * (storeItemsData[1].bonusClick || 0);
 
         const totalGain = (baseClick + bonusClick) * (window.BountyGame.multiplier || 1);
         window.BountyGame.count += totalGain;
