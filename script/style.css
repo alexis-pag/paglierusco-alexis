@@ -50,7 +50,6 @@ html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,Poppins,Arial;bac
 .panel-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .panel-header h1{font-size:1.6rem;margin:0;color:var(--neon-blue);text-shadow:0 4px 18px rgba(0,212,255,0.12)}
 .panel-header h2{font-size:1.05rem;margin:0;color:var(--neon-green)}
-.panel-header{cursor:pointer} /* menu déroulant indicatif */
 
 /* counters */
 .counters{display:flex;gap:10px;align-items:center}
@@ -111,7 +110,6 @@ html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,Poppins,Arial;bac
   pointer-events:none;
   z-index:10;
 }
-
 .tooltip::after{
   content:'';
   position:absolute;
@@ -122,11 +120,7 @@ html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,Poppins,Arial;bac
   border-style:solid;
   border-color: rgba(2,6,20,0.95) transparent transparent transparent;
 }
-
-.btn.buy:hover .tooltip{
-  opacity:1;
-  transform:translateX(-50%) translateY(0);
-}
+.btn.buy:hover .tooltip{opacity:1;transform:translateX(-50%) translateY(0);}
 
 .boost-appear{animation:boostPop .8s cubic-bezier(.2,.9,.2,1)}
 @keyframes boostPop{0%{transform:scale(.3);opacity:0;filter:brightness(3)}60%{transform:scale(1.08)}100%{transform:scale(1);opacity:1;filter:none}}
@@ -136,12 +130,28 @@ html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,Poppins,Arial;bac
 .bottom-bar{position:fixed;left:0;right:0;bottom:14px;display:flex;justify-content:center;pointer-events:none}
 .bottom-bar .btn{pointer-events:all}
 
-/* Menu déroulant boutique */
-.shop .panel-main {
-  max-height: 0;
+/* --- Menu déroulant boutique --- */
+.shop {
+  max-height: 40px; /* hauteur du header fermé */
   overflow: hidden;
   transition: max-height 0.4s ease;
 }
-.shop.open .panel-main {
-  max-height: 2000px; /* assez pour tous les items */
+
+.shop.open {
+  max-height: 1000px; /* hauteur max pour dérouler */
+}
+
+.shop .panel-header {
+  cursor: pointer;
+}
+
+.shop .panel-header::after {
+  content: "▼";
+  margin-left: 8px;
+  font-size: 0.9rem;
+  transition: transform 0.3s ease;
+}
+
+.shop.open .panel-header::after {
+  transform: rotate(-180deg);
 }
