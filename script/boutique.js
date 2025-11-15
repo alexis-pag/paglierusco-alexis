@@ -22,7 +22,6 @@
   window.BountyGame = window.BountyGame || {};
   window.BountyGame.count = window.BountyGame.count || 0;
   window.BountyGame.multiplier = window.BountyGame.multiplier || 1;
-  window.BountyGame.bonusClick = 0; // bonus par clic, 0 au départ
 
   const storeDiv = document.getElementById('storeItems');
 
@@ -71,12 +70,7 @@
     if (window.BountyGame.count >= item.price) {
       window.BountyGame.count -= item.price;
 
-      // bonus par clic (remplace le clic de base pour Gamelle/Cage)
-      if (item.bonusClick) {
-        window.BountyGame.bonusClick = item.bonusClick;
-      }
-
-      // multiplicateur normal
+      // appliquer multiplicateurs
       if (item.mult > 0) window.BountyGame.multiplier += item.mult;
 
       item.owned += 1;
@@ -88,7 +82,7 @@
       flash.style.position = 'absolute'; flash.style.inset = '0';
       node.appendChild(flash); setTimeout(()=>flash.remove(), 420);
 
-      if (window.updateCounterUI) window.updateCounterUI();
+      updateCounterUI && updateCounterUI();
       if (window.sauvegarderJeu) window.sauvegarderJeu();
       updateStore();
     } else {
@@ -104,7 +98,6 @@
     resetBtn.addEventListener('click', () => {
       BountyGame.count = 0;
       BountyGame.multiplier = 1;
-      BountyGame.bonusClick = 0;
 
       // reset items
       storeItemsData.forEach(item => {
@@ -127,9 +120,14 @@
     const img = document.getElementById('image');
     if (img) {
       img.addEventListener('click', () => {
-        // si bonusClick > 0 on prend ce bonus, sinon clic de base = 1
-        const gain = window.BountyGame.bonusClick > 0 ? window.BountyGame.bonusClick : 1;
-        const totalGain = gain * (window.BountyGame.multiplier || 1);
+        const baseClick = 1;
+
+        // calcul des bonus cumulés des 2 premiers items
+        let bonusClick = 0;
+        if (storeItemsData[0].owned) bonusClick += storeItemsData[0].owned * storeItemsData[0].bonusClick; // Gamelle
+        if (storeItemsData[1].owned) bonusClick += storeItemsData[1].owned * storeItemsData[1].bonusClick; // Cage
+
+        const totalGain = (baseClick + bonusClick) * (window.BountyGame.multiplier || 1);
         window.BountyGame.count += totalGain;
         updateCounterUI && updateCounterUI();
       });
