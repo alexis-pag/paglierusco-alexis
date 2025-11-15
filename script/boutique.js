@@ -62,7 +62,7 @@
       window.BountyGame.count -= item.price;
       if (item.mult > 0) window.BountyGame.multiplier += item.mult; // pour les autres items uniquement
       item.owned += 1;
-      item.price = Math.round(item.price * 1.15);
+      item.price = Math.round(item.price * 1.40);
 
       const node = storeDiv.children[idx];
       const flash = document.createElement('div'); flash.className = 'boost-appear';
