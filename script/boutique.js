@@ -22,7 +22,7 @@
   window.BountyGame = window.BountyGame || {};
   window.BountyGame.count = window.BountyGame.count || 0;
   window.BountyGame.multiplier = window.BountyGame.multiplier || 1;
-  window.BountyGame.bonusClick = 0; // bonus par clic cumulatif
+  window.BountyGame.bonusClick = 0; // bonus par clic, 0 au départ
 
   const storeDiv = document.getElementById('storeItems');
 
@@ -71,9 +71,9 @@
     if (window.BountyGame.count >= item.price) {
       window.BountyGame.count -= item.price;
 
-      // bonus par clic pour Gamelle/Cage
+      // bonus par clic (remplace le clic de base pour Gamelle/Cage)
       if (item.bonusClick) {
-        window.BountyGame.bonusClick = item.bonusClick; // remplace au lieu d’additionner
+        window.BountyGame.bonusClick = item.bonusClick;
       }
 
       // multiplicateur normal
@@ -102,12 +102,11 @@
   const resetBtn = document.getElementById('resetButton');
   if (resetBtn) {
     resetBtn.addEventListener('click', () => {
-      // reset compteur et multiplicateur
       BountyGame.count = 0;
       BountyGame.multiplier = 1;
       BountyGame.bonusClick = 0;
 
-      // reset des items
+      // reset items
       storeItemsData.forEach(item => {
         item.owned = 0;
         item.price = item.basePrice;
@@ -128,6 +127,7 @@
     const img = document.getElementById('image');
     if (img) {
       img.addEventListener('click', () => {
+        // si bonusClick > 0 on prend ce bonus, sinon clic de base = 1
         const gain = window.BountyGame.bonusClick > 0 ? window.BountyGame.bonusClick : 1;
         const totalGain = gain * (window.BountyGame.multiplier || 1);
         window.BountyGame.count += totalGain;
