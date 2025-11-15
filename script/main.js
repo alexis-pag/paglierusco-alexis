@@ -1,179 +1,158 @@
-/* Neon / game style */
-:root{
-  --glass: rgba(255,255,255,0.06);
-  --panel-radius:14px;
-  --neon-blue: #00d4ff;
-  --neon-pink: #ff3cac;
-  --neon-green: #9bff7a;
-  --bg-dark: #071025;
-}
+/* main.js - click, +1, cps, save/load, reset, boutique toggle */
+(() => {
+  // Ensure shared object
+  window.BountyGame = window.BountyGame || {};
+  if (window.BountyGame.count === undefined) window.BountyGame.count = 0;
+  if (window.BountyGame.multiplier === undefined) window.BountyGame.multiplier = 1;
 
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,Poppins,Arial;background:#05040a;color:#e6f7ff;overflow:hidden}
+  const imgEl = document.getElementById('image');
+  const counterEl = document.getElementById('counter');
+  const cpsEl = document.getElementById('cps');
+  const resetButton = document.getElementById('resetButton');
+  const clickSound = document.getElementById('clickSound');
+  const shopPanel = document.querySelector('.shop');
 
-/* animated background */
-.bg-animated{
-  position:fixed;inset:0;z-index:-2;
-  background:linear-gradient(45deg,#071025 0%, #0e203a 20%, #1b1030 45%, #0b2a3a 70%, #071025 100%);
-  background-size: 400% 400%;
-  animation: bgShift 18s ease infinite;
-  filter:blur(12px) brightness(.9);
-}
-@keyframes bgShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+  // helper: play sound safely
+  function jouerSon(){
+    try{ clickSound.currentTime = 0; clickSound.volume = 0.9; clickSound.play(); } catch(e){}
+  }
 
-/* layout: 3 columns */
-.layout{
-  display:grid;
-  grid-template-columns: 1fr 360px 320px;
-  gap:20px;
-  padding:26px;
-  height: calc(100vh - 92px);
-  align-items:start;
-}
+  // change image for click feedback (random)
+  const images = [
+    'image/bounty.jpg','image/bounty2.jpg','image/bounty3.jpg',
+    'image/bounty4.jpg','image/bounty5.jpg','image/bounty6.jpg',
+    'image/bounty7.jpg','image/bounty8.jpg','image/bountygraille.jpg'
+  ];
+  let lastIndex = -1;
+  function changerImage(){
+    let idx;
+    do { idx = Math.floor(Math.random() * images.length); } while (idx === lastIndex);
+    lastIndex = idx;
+    imgEl.src = images[idx];
+  }
 
-/* panel base */
-.panel{
-  border-radius:var(--panel-radius);
-  padding:14px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
-  box-shadow: 0 10px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
-  backdrop-filter: blur(6px);
-  min-height: 100%;
-}
+  // +1 visual
+  function afficherPlusUn(x, y, value){
+    const el = document.createElement('div');
+    el.className = 'plus-one';
+    el.textContent = `+${Math.floor(value)}`;
+    document.body.appendChild(el);
+    const left = Math.min(window.innerWidth - 40, Math.max(8, x));
+    const top = Math.min(window.innerHeight - 40, Math.max(8, y));
+    el.style.left = left + 'px';
+    el.style.top = top + 'px';
+    setTimeout(()=>el.remove(), 950);
+  }
 
-/* colored accents */
-.clicker{border-left:4px solid var(--neon-blue)}
-.shop{border-left:4px solid var(--neon-green)}
-.boosts{border-left:4px solid var(--neon-pink)}
+  // click handler
+  let lastClickTime = 0;
+  imgEl.addEventListener('click', (ev) => {
+    const now = Date.now();
+    if (now - lastClickTime < 180) return;
+    lastClickTime = now;
 
-/* header */
-.panel-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.panel-header h1{font-size:1.6rem;margin:0;color:var(--neon-blue);text-shadow:0 4px 18px rgba(0,212,255,0.12)}
-.panel-header h2{font-size:1.05rem;margin:0;color:var(--neon-green)}
+    // compute bonus (multiplier + shop items)
+    let bonus = window.BountyGame.multiplier || 1;
+    const items = window.storeItemsData || [];
 
-/* counters */
-.counters{display:flex;gap:10px;align-items:center}
-#counter,#cps{
-  background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  padding:8px 12px;border-radius:10px;font-weight:700;color:#f0f8ff;text-shadow:0 2px 8px rgba(0,0,0,0.6)
-}
+    // apply mult items (Gamelle + Cage)
+    items.forEach(it => {
+      if (it.owned && it.mult > 0) bonus += it.mult * it.owned;
+    });
 
-/* clicker image */
-.panel-main{display:flex;flex-direction:column;gap:12px}
-.image-wrap{display:flex;justify-content:center;align-items:center;height:100%}
-#image{width:640px;max-width:100%;height:420px;object-fit:contain;border-radius:12px;border:4px solid rgba(255,255,255,0.04);box-shadow:0 18px 60px rgba(0,0,0,0.65);transition:transform .12s ease, box-shadow .2s ease}
-#image:active{transform:scale(.985);box-shadow:0 30px 90px rgba(0,0,0,0.7)}
+    window.BountyGame.count += bonus;
 
-/* plus-one */
-.plus-one{
-  position:fixed; pointer-events:none; font-weight:800; font-size:22px;
-  color:var(--neon-green); text-shadow:0 4px 18px rgba(155,255,122,0.18);
-  animation: plusUp .95s cubic-bezier(.2,.9,.2,1) forwards;
-}
-@keyframes plusUp {0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-90px) scale(1.25)}}
+    afficherPlusUn(ev.clientX, ev.clientY, bonus);
+    changerImage();
+    jouerSon();
+    updateCounterUI();
+    if (window.updateStore) window.updateStore();
+    if (window.sauvegarderJeu) window.sauvegarderJeu();
+  });
 
-/* list entries */
-.list{display:flex;flex-direction:column;gap:10px}
-.item, .boost-node{
-  display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
-  color:#e8f8ff;border:1px solid rgba(255,255,255,0.03);
-  transition:transform .14s ease, box-shadow .14s ease;
-  position:relative;
-}
-.item:hover, .boost-node:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(0,0,0,0.6)}
-.item .left{display:flex;gap:10px;align-items:center}
-.icon{width:44px;height:44px;border-radius:8px;object-fit:cover;border:1px solid rgba(255,255,255,0.03)}
-.count-badge{position:absolute;top:-8px;right:-8px;background:#ff4d6e;color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:12px}
+  // CPS calculation
+  function calculCPS(){
+    let total = 0;
+    const items = window.storeItemsData || [];
+    items.forEach(it => {
+      if (it.auto > 0 && it.owned > 0) total += it.auto * it.owned;
+    });
+    return total;
+  }
 
-/* buttons */
-.btn{padding:8px 12px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
-.buy{background:linear-gradient(90deg,var(--neon-blue),#6effff);color:#021224;box-shadow:0 8px 20px rgba(0,212,255,0.12)}
-.buy:disabled{opacity:.45;cursor:not-allowed}
-.activate{background:linear-gradient(90deg,var(--neon-pink),#ff8ed6);color:#14031f;box-shadow:0 8px 20px rgba(255,60,172,0.08)}
-.reset{background:linear-gradient(90deg,#ff5a5a,#ff2d55);color:#fff;box-shadow:0 10px 30px rgba(255,0,60,0.12);padding:12px 20}
+  // update UI counters
+  function updateCounterUI(){
+    counterEl.textContent = `Croquettes : ${Math.floor(window.BountyGame.count)} (x${window.BountyGame.multiplier})`;
+    cpsEl.textContent = `CPS : ${Math.floor(calculCPS())}`;
+  }
+  window.updateCounterUI = updateCounterUI;
 
-/* tooltip */
-.tooltip{
-  position:absolute;
-  bottom:120%; /* positionné au-dessus du bouton */
-  left:50%;
-  transform:translateX(-50%) translateY(-5px);
-  background:rgba(2,6,20,0.95);
-  padding:8px 10px;
-  border-radius:8px;
-  color:#fff;
-  font-size:13px;
-  white-space:nowrap;
-  box-shadow:0 14px 40px rgba(0,0,0,0.6);
-  opacity:0;
-  transition:opacity 0.25s ease, transform 0.25s ease;
-  pointer-events:none;
-  z-index:10;
-}
-.tooltip::after {
-  content:'';
-  position:absolute;
-  top:100%;
-  left:50%;
-  transform:translateX(-50%);
-  border-width:6px;
-  border-style:solid;
-  border-color: rgba(2,6,20,0.95) transparent transparent transparent;
-}
-.btn.buy:hover .tooltip {
-  opacity:1;
-  transform:translateX(-50%) translateY(0);
-}
+  // automatic CPS income
+  setInterval(() => {
+    const items = window.storeItemsData || [];
+    items.forEach(it => {
+      if (it.auto > 0 && it.owned > 0) window.BountyGame.count += it.auto * it.owned;
+    });
+    updateCounterUI();
+    if (window.updateStore) window.updateStore();
+  }, 1000);
 
-/* animated boost appear */
-.boost-appear{animation:boostPop .8s cubic-bezier(.2,.9,.2,1)}
-@keyframes boostPop{0%{transform:scale(.3);opacity:0;filter:brightness(3)}60%{transform:scale(1.08)}100%{transform:scale(1);opacity:1;filter:none}}
+  // save/load
+  function sauvegarderJeu(){
+    const data = {
+      count: window.BountyGame.count,
+      multiplier: window.BountyGame.multiplier,
+      storeItems: (window.storeItemsData || []).map(it => ({ owned: it.owned, price: it.price }))
+    };
+    localStorage.setItem('bountySave', JSON.stringify(data));
+  }
+  window.sauvegarderJeu = sauvegarderJeu;
 
-/* active boost visual */
-.boost-active{box-shadow:0 0 18px rgba(155,255,122,0.16);border:1px solid rgba(155,255,122,0.18)}
+  function chargerJeu(){
+    const raw = localStorage.getItem('bountySave');
+    if (!raw) return;
+    try {
+      const data = JSON.parse(raw);
+      window.BountyGame.count = data.count ?? window.BountyGame.count;
+      window.BountyGame.multiplier = data.multiplier ?? window.BountyGame.multiplier;
+      if (Array.isArray(data.storeItems) && Array.isArray(window.storeItemsData)) {
+        data.storeItems.forEach((s, i) => {
+          if (window.storeItemsData[i]) {
+            window.storeItemsData[i].owned = s.owned ?? window.storeItemsData[i].owned;
+            window.storeItemsData[i].price = s.price ?? window.storeItemsData[i].price;
+          }
+        });
+      }
+    } catch (e) { console.warn("Load error", e); }
+  }
+  window.chargerJeu = chargerJeu;
 
-/* bottom bar */
-.bottom-bar{position:fixed;left:0;right:0;bottom:14px;display:flex;justify-content:center;pointer-events:none}
-.bottom-bar .btn{pointer-events:all}
+  // reset
+  resetButton.addEventListener('click', () => {
+    if (!confirm("Réinitialiser le jeu et supprimer la sauvegarde ?")) return;
+    window.BountyGame.count = 0;
+    window.BountyGame.multiplier = 1;
+    (window.storeItemsData || []).forEach(it => { it.owned = 0; it.price = it.basePrice ?? it.price; });
+    sauvegarderJeu();
+    if (window.updateStore) window.updateStore();
+    updateCounterUI();
+  });
 
-/* ---------- Boutique déroulante ---------- */
-.shop {
-  width: 360px; /* visible par défaut */
-  overflow: hidden;
-  transition: width 0.3s ease;
-  cursor: pointer;
-  position: relative;
-}
-.shop.closed {
-  width: 60px; /* repliée */
-}
+  // --- toggle boutique ---
+  shopPanel.addEventListener('click', () => {
+    shopPanel.classList.toggle('closed');
+  });
 
-/* flèche indicatrice */
-.shop-toggle {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 16px;
-  height: 16px;
-  border-right: 2px solid #fff;
-  border-bottom: 2px solid #fff;
-  transform: rotate(45deg);
-  transition: transform 0.3s ease;
-  pointer-events: none;
-}
-.shop.closed .shop-toggle {
-  transform: rotate(-135deg);
-}
+  // initial load
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      chargerJeu();
+      if (window.updateStore) window.updateStore();
+      updateCounterUI();
+      changerImage();
+    }, 60);
+  });
 
-/* panel header et contenu */
-.shop .panel-header,
-.shop .panel-main {
-  opacity: 1;
-  transition: opacity 0.3s ease;
-  pointer-events: all;
-}
-.shop.closed .panel-header,
-.shop.closed .panel-main {
-  opacity: 0;
-  pointer-events: none;
-}
+  // periodic save
+  setInterval(sauvegarderJeu, 60000);
+})();
