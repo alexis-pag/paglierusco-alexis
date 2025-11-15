@@ -1,98 +1,181 @@
-<!doctype html>
-<html lang="fr">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Bounty Clicker — Néon</title>
-  <link rel="stylesheet" href="script/style.css">
-  <style>
-    /* --- Menu déroulant pour la boutique --- */
-    .shop {
-      overflow: hidden;
-      max-height: 60px; /* hauteur du header fermé */
-      transition: max-height 0.35s ease, padding 0.35s ease;
-    }
+/* main.js
+   - click, +1, cps, save/load, reset
+   - depends on storeItemsData & boostsData from other scripts
+*/
+(() => {
+  // Ensure shared object
+  window.BountyGame = window.BountyGame || {};
+  if (window.BountyGame.count === undefined) window.BountyGame.count = 0;
+  if (window.BountyGame.multiplier === undefined) window.BountyGame.multiplier = 1;
 
-    .shop.open {
-      max-height: 800px; /* hauteur ouverte du panel boutique */
-      padding: 14px;
-    }
+  const imgEl = document.getElementById('image');
+  const counterEl = document.getElementById('counter');
+  const cpsEl = document.getElementById('cps');
+  const resetButton = document.getElementById('resetButton');
+  const clickSound = document.getElementById('clickSound');
 
-    /* Curseur pointer sur le header */
-    .shop .panel-header {
-      cursor: pointer;
-    }
+  // helper: play sound safely
+  function jouerSon(){
+    try{ clickSound.currentTime = 0; clickSound.volume = 0.9; clickSound.play(); } catch(e){}
+  }
 
-    /* Flèche indicatrice */
-    .shop .panel-header h2::after {
-      content: ' ▼';
-      font-size: 0.8em;
-      transition: transform 0.3s ease;
-    }
+  // change image for click feedback (random)
+  const images = [
+    'image/bounty.jpg','image/bounty2.jpg','image/bounty3.jpg',
+    'image/bounty4.jpg','image/bounty5.jpg','image/bounty6.jpg',
+    'image/bounty7.jpg','image/bounty8.jpg','image/bountygraille.jpg'
+  ];
+  let lastIndex = -1;
+  function changerImage(){
+    let idx;
+    do { idx = Math.floor(Math.random() * images.length); } while (idx === lastIndex);
+    lastIndex = idx;
+    imgEl.src = images[idx];
+  }
 
-    .shop.open .panel-header h2::after {
-      transform: rotate(180deg);
-    }
-  </style>
-</head>
-<body>
-  <div class="bg-animated"></div>
+  // +1 visual
+  function afficherPlusUn(x, y, value){
+    const el = document.createElement('div');
+    el.className = 'plus-one';
+    el.textContent = `+${Math.floor(value)}`;
+    document.body.appendChild(el);
+    const left = Math.min(window.innerWidth - 40, Math.max(8, x));
+    const top = Math.min(window.innerHeight - 40, Math.max(8, y));
+    el.style.left = left + 'px';
+    el.style.top = top + 'px';
+    setTimeout(()=>el.remove(), 950);
+  }
 
-  <div class="layout">
-    <!-- Left: Clicker -->
-    <section class="panel clicker">
-      <header class="panel-header">
-        <h1>Bounty Clicker</h1>
-        <div class="counters">
-          <div id="counter">Croquettes : 0</div>
-          <div id="cps">CPS : 0</div>
-        </div>
-      </header>
+  // click handler
+  let lastClickTime = 0;
+  imgEl.addEventListener('click', (ev) => {
+    const now = Date.now();
+    if (now - lastClickTime < 180) return; // anti-spam
+    lastClickTime = now;
 
-      <main class="panel-main">
-        <div class="image-wrap">
-          <img id="image" src="image/bounty.jpg" alt="Bounty">
-        </div>
-      </main>
-    </section>
+    // compute bonus (multiplier + store items)
+    let bonus = window.BountyGame.multiplier || 1;
 
-    <!-- Middle: Shop (menu déroulant) -->
-    <aside class="panel shop" id="shopPanel">
-      <header class="panel-header"><h2>Boutique</h2></header>
-      <div class="panel-main">
-        <div id="storeItems" class="list"></div>
-      </div>
-    </aside>
-
-    <!-- Right: Boosts -->
-    <aside class="panel boosts">
-      <header class="panel-header"><h2>Boosts & Bonus</h2></header>
-      <div class="panel-main">
-        <div id="boostsContainer" class="list"></div>
-      </div>
-    </aside>
-  </div>
-
-  <footer class="bottom-bar">
-    <button id="resetButton" class="btn reset">Réinitialiser</button>
-  </footer>
-
-  <audio id="clickSound" src="script/audio/Mouse Click Sound Effect.mp3" preload="auto"></audio>
-
-  <!-- scripts: boutique & boost first, main last -->
-  <script src="script/boutique.js" defer></script>
-  <script src="script/boost.js" defer></script>
-  <script src="script/main.js" defer></script>
-
-  <!-- Script pour menu déroulant boutique -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const shopPanel = document.getElementById('shopPanel');
-      const header = shopPanel.querySelector('.panel-header');
-      header.addEventListener('click', () => {
-        shopPanel.classList.toggle('open');
-      });
+    // add multipliers from shop items
+    const items = window.storeItemsData || [];
+    items.forEach(it => {
+      if (it.owned > 0 && it.mult > 0) bonus += it.mult * it.owned;
     });
-  </script>
-</body>
-</html>
+
+    // add
+    window.BountyGame.count += bonus;
+
+    afficherPlusUn(ev.clientX, ev.clientY, bonus);
+    changerImage();
+    jouerSon();
+    updateCounterUI();
+    if (window.updateStore) window.updateStore();
+    if (window.sauvegarderJeu) window.sauvegarderJeu();
+  });
+
+  // CPS calculation
+  function calculCPS(){
+    let total = 0;
+    const items = window.storeItemsData || [];
+    const boosts = window.boostsData || [];
+    items.forEach(it => {
+      if (it.auto > 0 && it.owned > 0) {
+        let gain = it.auto * it.owned;
+        if (boosts[1] && boosts[1].active) gain *= 2;
+        if (boosts[4] && boosts[4].active) gain *= 1.05;
+        total += gain;
+      }
+    });
+    return total;
+  }
+
+  // update UI counters
+  function updateCounterUI(){
+    counterEl.textContent = `Croquettes : ${Math.floor(window.BountyGame.count)} (x${window.BountyGame.multiplier})`;
+    cpsEl.textContent = `CPS : ${Math.floor(calculCPS())}`;
+  }
+  window.updateCounterUI = updateCounterUI;
+
+  // automatic CPS income
+  setInterval(() => {
+    const items = window.storeItemsData || [];
+    const boosts = window.boostsData || [];
+    items.forEach(it => {
+      if (it.auto > 0 && it.owned > 0) {
+        let gain = it.auto * it.owned;
+        if (boosts[1] && boosts[1].active) gain *= 2;
+        if (boosts[4] && boosts[4].active) gain *= 1.05;
+        window.BountyGame.count += gain;
+      }
+    });
+    updateCounterUI();
+    if (window.updateStore) window.updateStore();
+  }, 1000);
+
+  // save/load
+  function sauvegarderJeu(){
+    const data = {
+      count: window.BountyGame.count,
+      multiplier: window.BountyGame.multiplier,
+      storeItems: (window.storeItemsData || []).map(it => ({ owned: it.owned, price: it.price })),
+      boosts: (window.boostsData || []).map(b => ({ active: b.active, permanent: b.permanent }))
+    };
+    localStorage.setItem('bountySave', JSON.stringify(data));
+  }
+  window.sauvegarderJeu = sauvegarderJeu;
+
+  function chargerJeu(){
+    const raw = localStorage.getItem('bountySave');
+    if (!raw) return;
+    try {
+      const data = JSON.parse(raw);
+      window.BountyGame.count = data.count ?? window.BountyGame.count;
+      window.BountyGame.multiplier = data.multiplier ?? window.BountyGame.multiplier;
+      if (Array.isArray(data.storeItems) && Array.isArray(window.storeItemsData)) {
+        data.storeItems.forEach((s, i) => {
+          if (window.storeItemsData[i]) {
+            window.storeItemsData[i].owned = s.owned ?? window.storeItemsData[i].owned;
+            window.storeItemsData[i].price = s.price ?? window.storeItemsData[i].price;
+          }
+        });
+      }
+      if (Array.isArray(data.boosts) && Array.isArray(window.boostsData)) {
+        data.boosts.forEach((b, i) => {
+          if (window.boostsData[i]) {
+            window.boostsData[i].active = !!b.active;
+            window.boostsData[i].permanent = !!b.permanent;
+            if (window.boostsData[i].permanent) window.boostsData[i].available = false;
+          }
+        });
+      }
+    } catch (e) { console.warn("Load error", e); }
+  }
+  window.chargerJeu = chargerJeu;
+
+  // reset
+  resetButton.addEventListener('click', () => {
+    if (!confirm("Réinitialiser le jeu et supprimer la sauvegarde ?")) return;
+    window.BountyGame.count = 0;
+    window.BountyGame.multiplier = 1;
+    (window.storeItemsData || []).forEach(it => { it.owned = 0; it.price = it.basePrice ?? it.price; });
+    (window.boostsData || []).forEach(b => { b.active = false; b.available = false; b.permanent = false; });
+    sauvegarderJeu();
+    if (window.updateStore) window.updateStore();
+    if (window.afficherBoosts) window.afficherBoosts();
+    updateCounterUI();
+  });
+
+  // initial load (wait briefly so boutique/boost scripts ran)
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      chargerJeu();
+      if (window.updateStore) window.updateStore();
+      if (window.afficherBoosts) window.afficherBoosts();
+      updateCounterUI();
+      changerImage();
+    }, 60);
+  });
+
+  // periodic save
+  setInterval(sauvegarderJeu, 60000);
+})();
