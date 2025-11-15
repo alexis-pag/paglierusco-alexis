@@ -5,35 +5,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Bounty Clicker — Néon</title>
   <link rel="stylesheet" href="script/style.css">
-  <style>
-    /* --- Menu déroulant pour la boutique --- */
-    .shop {
-      overflow: hidden;
-      max-height: 60px; /* hauteur du header fermé */
-      transition: max-height 0.35s ease, padding 0.35s ease;
-    }
-
-    .shop.open {
-      max-height: 800px; /* hauteur ouverte du panel boutique */
-      padding: 14px;
-    }
-
-    /* Curseur pointer sur le header */
-    .shop .panel-header {
-      cursor: pointer;
-    }
-
-    /* Flèche indicatrice */
-    .shop .panel-header h2::after {
-      content: ' ▼';
-      font-size: 0.8em;
-      transition: transform 0.3s ease;
-    }
-
-    .shop.open .panel-header h2::after {
-      transform: rotate(180deg);
-    }
-  </style>
 </head>
 <body>
   <div class="bg-animated"></div>
@@ -48,7 +19,6 @@
           <div id="cps">CPS : 0</div>
         </div>
       </header>
-
       <main class="panel-main">
         <div class="image-wrap">
           <img id="image" src="image/bounty.jpg" alt="Bounty">
@@ -56,7 +26,7 @@
       </main>
     </section>
 
-    <!-- Middle: Shop (menu déroulant) -->
+    <!-- Middle: Shop -->
     <aside class="panel shop" id="shopPanel">
       <header class="panel-header"><h2>Boutique</h2></header>
       <div class="panel-main">
@@ -79,17 +49,17 @@
 
   <audio id="clickSound" src="script/audio/Mouse Click Sound Effect.mp3" preload="auto"></audio>
 
-  <!-- scripts: boutique & boost first, main last -->
+  <!-- Scripts -->
   <script src="script/boutique.js" defer></script>
   <script src="script/boost.js" defer></script>
   <script src="script/main.js" defer></script>
 
-  <!-- Script pour menu déroulant boutique -->
+  <!-- Menu déroulant à la molette -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const shopPanel = document.getElementById('shopPanel');
-      const header = shopPanel.querySelector('.panel-header');
-      header.addEventListener('click', () => {
+      shopPanel.addEventListener('wheel', (e) => {
+        e.preventDefault();
         shopPanel.classList.toggle('open');
       });
     });
