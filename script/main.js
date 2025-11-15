@@ -21,9 +21,9 @@
 
   // change image for click feedback (random)
   const images = [
-    'script/image/bounty.jpg','script/image/bounty2.jpg','script/image/bounty3.jpg',
-    'script/image/bounty4.jpg','script/image/bounty5.jpg','script/image/bounty6.jpg',
-    'script/image/bounty7.jpg','script/image/bounty8.jpg','script/image/bountygraille.jpg'
+    'image/bounty.jpg','image/bounty2.jpg','image/bounty3.jpg',
+    'image/bounty4.jpg','image/bounty5.jpg','image/bounty6.jpg',
+    'image/bounty7.jpg','image/bounty8.jpg','image/bountygraille.jpg'
   ];
   let lastIndex = -1;
   function changerImage(){
