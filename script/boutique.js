@@ -36,6 +36,13 @@
     btn.disabled = !(window.BountyGame && window.BountyGame.count >= item.price);
     btn.addEventListener('click', (e) => { e.stopPropagation(); acheterItem(idx); });
 
+    // --- TOOLTIP ANIMÉ AJOUTÉ ---
+    const tooltip = document.createElement('span');
+    tooltip.className = 'tooltip';
+    tooltip.textContent = item.mult > 0 ? `+${item.mult} multiplicateur !` : `+${item.auto} auto-croquettes !`;
+    btn.appendChild(tooltip);
+    // ------------------------------
+
     right.appendChild(btn);
 
     const badge = document.createElement('div'); badge.className = 'count-badge'; badge.textContent = item.owned;
