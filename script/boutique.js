@@ -1,5 +1,5 @@
 (() => {
-  // données des items
+  // Données des items
   window.storeItemsData = [
     { name: "Gamelle de croquette", price: 10, mult: 0, auto: 0, owned: 0, icon: "script/image/gamelle.png", bonusClick: 1 },
     { name: "Cage à croquette", price: 50, mult: 0, auto: 0, owned: 0, icon: "script/image/cage.png", bonusClick: 5 },
@@ -18,10 +18,10 @@
   // sauvegarde du prix initial
   window.storeItemsData.forEach(it => { if (it.basePrice === undefined) it.basePrice = it.price; });
 
-  // initialisation du jeu
+  // Initialisation du jeu
   window.BountyGame = window.BountyGame || {};
   window.BountyGame.count = window.BountyGame.count || 0;
-  window.BountyGame.multiplier = window.BountyGame.multiplier || 1;
+  window.BountyGame.multiplier = 1; // multiplicateur global
 
   const storeDiv = document.getElementById('storeItems');
 
@@ -39,7 +39,7 @@
     btn.disabled = !(window.BountyGame && window.BountyGame.count >= item.price);
     btn.addEventListener('click', (e) => { e.stopPropagation(); acheterItem(idx); });
 
-    // tooltip animé
+    // Tooltip animé
     const tooltip = document.createElement('span');
     tooltip.className = 'tooltip';
     if (item.bonusClick) tooltip.textContent = `+${item.bonusClick} par clic !`;
@@ -70,7 +70,6 @@
     if (window.BountyGame.count >= item.price) {
       window.BountyGame.count -= item.price;
 
-      // appliquer multiplicateurs
       if (item.mult > 0) window.BountyGame.multiplier += item.mult;
 
       item.owned += 1;
@@ -80,7 +79,7 @@
       const node = storeDiv.children[idx];
       const flash = document.createElement('div'); flash.className = 'boost-appear';
       flash.style.position = 'absolute'; flash.style.inset = '0';
-      node.appendChild(flash); setTimeout(()=>flash.remove(), 420);
+      node.appendChild(flash); setTimeout(() => flash.remove(), 420);
 
       updateCounterUI && updateCounterUI();
       if (window.sauvegarderJeu) window.sauvegarderJeu();
@@ -88,7 +87,7 @@
     } else {
       const old = document.body.style.filter;
       document.body.style.filter = 'brightness(.85)';
-      setTimeout(()=>document.body.style.filter = old, 220);
+      setTimeout(() => document.body.style.filter = old, 220);
     }
   }
 
@@ -99,7 +98,6 @@
       BountyGame.count = 0;
       BountyGame.multiplier = 1;
 
-      // reset items
       storeItemsData.forEach(item => {
         item.owned = 0;
         item.price = item.basePrice;
@@ -110,18 +108,15 @@
     });
   }
 
-  // Calcul du gain exact au clic
+  // Calcul du gain exact par clic
   function getClickGain() {
-    let gain = 1; // clic de base si aucun item acheté
+    let gain = 1; // clic de base
+    // ajouter bonus des items Gamelle et Cage
+    gain += (storeItemsData[0].owned * (storeItemsData[0].bonusClick || 0));
+    gain += (storeItemsData[1].owned * (storeItemsData[1].bonusClick || 0));
 
-    const gamelle = storeItemsData[0];
-    const cage = storeItemsData[1];
-
-    if (gamelle.owned > 0 || cage.owned > 0) {
-      gain = (gamelle.owned * (gamelle.bonusClick || 0)) + (cage.owned * (cage.bonusClick || 0));
-    }
-
-    gain *= window.BountyGame.multiplier || 1;
+    // appliquer multiplicateur global si présent
+    gain *= (window.BountyGame.multiplier || 1);
     return gain;
   }
 
@@ -131,7 +126,6 @@
   document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => updateStore(), 40);
 
-    // clic principal sur l'image
     const img = document.getElementById('image');
     if (img) {
       img.addEventListener('click', () => {
