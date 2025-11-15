@@ -90,37 +90,14 @@ html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,Poppins,Arial;bac
 .buy{background:linear-gradient(90deg,var(--neon-blue),#6effff);color:#021224;box-shadow:0 8px 20px rgba(0,212,255,0.12)}
 .buy:disabled{opacity:.45;cursor:not-allowed}
 .activate{background:linear-gradient(90deg,var(--neon-pink),#ff8ed6);color:#14031f;box-shadow:0 8px 20px rgba(255,60,172,0.08)}
-.reset{background:linear-gradient(90deg,#ff5a5a,#ff2d55);color:#fff;box-shadow:0 10px 30px rgba(255,0,60,0.12);padding:12px 20px}
+.reset{background:linear-gradient(90deg,#ff5a5a,#ff2d55);color:#fff;box-shadow:0 10px 30px rgba(255,0,60,0.12);padding:12px 20}
 
 /* tooltip */
-.tooltip{
-  position:absolute;left:calc(100% + 12px);top:50%;transform:translateY(-50%);
-  background:rgba(2,6,20,0.95);padding:8px 10px;border-radius:8px;color:#fff;font-size:13px;white-space:nowrap;box-shadow:0 14px 40px rgba(0,0,0,0.6)
-}
-.boost-appear{animation:boostPop .8s cubic-bezier(.2,.9,.2,1)}
-@keyframes boostPop{0%{transform:scale(.3);opacity:0;filter:brightness(3)}60%{transform:scale(1.08)}100%{transform:scale(1);opacity:1;filter:none}}
-
-/* active boost visual */
-.boost-active{box-shadow:0 0 18px rgba(155,255,122,0.16);border:1px solid rgba(155,255,122,0.18)}
-
-/* bottom bar */
-.bottom-bar{position:fixed;left:0;right:0;bottom:14px;display:flex;justify-content:center;pointer-events:none}
-.bottom-bar .btn{pointer-events:all}
-/* Tooltips animés pour les boutons de la boutique */
-.btn.buy {
-  position: relative; /* nécessaire pour le tooltip */
-}
-
-/* Tooltips animés au-dessus des boutons de la boutique */
-.btn.buy {
-  position: relative; /* nécessaire pour le tooltip */
-}
-
 .tooltip{
   position:absolute;
   bottom:120%; /* positionné au-dessus du bouton */
   left:50%;
-  transform:translateX(-50%) translateY(-5px); /* léger décalage pour l'animation */
+  transform:translateX(-50%) translateY(-5px);
   background:rgba(2,6,20,0.95);
   padding:8px 10px;
   border-radius:8px;
@@ -147,5 +124,27 @@ html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,Poppins,Arial;bac
 
 .btn.buy:hover .tooltip {
   opacity:1;
-  transform:translateX(-50%) translateY(0); /* slide vers la position finale */
+  transform:translateX(-50%) translateY(0);
+}
+
+/* boutique compacte déroulante */
+.shop {
+  width: 60px; /* largeur repliée */
+  overflow: hidden;
+  transition: width 0.3s ease;
+  cursor: pointer;
+}
+.shop.open {
+  width: 360px; /* largeur normale */
+}
+.shop .panel-header,
+.shop .panel-main {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.shop.open .panel-header,
+.shop.open .panel-main {
+  opacity: 1;
+  pointer-events: all;
 }
