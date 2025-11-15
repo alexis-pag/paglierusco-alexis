@@ -120,15 +120,19 @@
     const img = document.getElementById('image');
     if (img) {
       img.addEventListener('click', () => {
-        const baseClick = 1;
-
         // calcul des bonus cumulés pour Gamelle et Cage
-        let bonusClick = 0;
-        if (storeItemsData[0].owned) bonusClick += storeItemsData[0].owned * (storeItemsData[0].bonusClick || 0);
-        if (storeItemsData[1].owned) bonusClick += storeItemsData[1].owned * (storeItemsData[1].bonusClick || 0);
+        let totalClick = 0;
+        for (let i = 0; i <= 1; i++) {
+          if (storeItemsData[i].owned) totalClick += storeItemsData[i].owned * (storeItemsData[i].bonusClick || 0);
+        }
 
-        const totalGain = (baseClick + bonusClick) * (window.BountyGame.multiplier || 1);
+        // si aucun item acheté, clic de base = 1
+        if (totalClick === 0) totalClick = 1;
+
+        // appliquer multiplicateur global
+        const totalGain = totalClick * (window.BountyGame.multiplier || 1);
         window.BountyGame.count += totalGain;
+
         updateCounterUI && updateCounterUI();
       });
     }
