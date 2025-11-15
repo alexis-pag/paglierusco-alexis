@@ -1,8 +1,7 @@
 (() => {
-  // Données des items
   window.storeItemsData = [
-    { name: "Gamelle de croquette", price: 10, mult: 0, auto: 0, owned: 0, icon: "script/image/gamelle.png", bonusClick: 1 },
-    { name: "Cage à croquette", price: 50, mult: 0, auto: 0, owned: 0, icon: "script/image/cage.png", bonusClick: 5 },
+    { name: "Gamelle de croquette", price: 10, bonusClick: 1, auto: 0, owned: 0, icon: "script/image/gamelle.png" },
+    { name: "Cage à croquette", price: 50, bonusClick: 5, auto: 0, owned: 0, icon: "script/image/cage.png" },
     { name: "Paquet de croquette", price: 100, mult: 0, auto: 1, owned: 0, icon: "script/image/paquet.png" },
     { name: "Magasin de croquettes", price: 500, mult: 0, auto: 5, owned: 0, icon: "script/image/magasin.png" },
     { name: "Supermarcher de croquette", price: 1000, mult: 0, auto: 10, owned: 0, icon: "script/image/supermarche.png" },
@@ -15,13 +14,8 @@
     { name: "Galaxy de croquettes", price: 5000000, mult: 0, auto: 5000, owned: 0, icon: "script/image/galaxy.png" }
   ];
 
-  // sauvegarde du prix initial
+  // basePrice pour reset
   window.storeItemsData.forEach(it => { if (it.basePrice === undefined) it.basePrice = it.price; });
-
-  // Initialisation du jeu
-  window.BountyGame = window.BountyGame || {};
-  window.BountyGame.count = window.BountyGame.count || 0;
-  window.BountyGame.multiplier = 1; // multiplicateur global
 
   const storeDiv = document.getElementById('storeItems');
 
@@ -39,15 +33,13 @@
     btn.disabled = !(window.BountyGame && window.BountyGame.count >= item.price);
     btn.addEventListener('click', (e) => { e.stopPropagation(); acheterItem(idx); });
 
-    // Tooltip animé
+    // tooltip animé
     const tooltip = document.createElement('span');
     tooltip.className = 'tooltip';
     if (item.bonusClick) tooltip.textContent = `+${item.bonusClick} par clic !`;
-    else if (item.mult > 0) tooltip.textContent = `+${item.mult} multiplicateur !`;
-    else tooltip.textContent = `+${item.auto} auto-croquettes !`;
-    btn.appendChild(tooltip);
-
+    else if (item.auto) tooltip.textContent = `+${item.auto} auto-croquettes !`;
     right.appendChild(btn);
+    btn.appendChild(tooltip);
 
     const badge = document.createElement('div'); badge.className = 'count-badge'; badge.textContent = item.owned;
 
@@ -66,58 +58,25 @@
   function acheterItem(idx) {
     const item = window.storeItemsData[idx];
     if (!item) return;
-
     if (window.BountyGame.count >= item.price) {
       window.BountyGame.count -= item.price;
-
-      if (item.mult > 0) window.BountyGame.multiplier += item.mult;
-
+      if (item.mult > 0) window.BountyGame.multiplier += item.mult; // pour les autres items uniquement
       item.owned += 1;
-      item.price = Math.round(item.price * 1.40);
+      item.price = Math.round(item.price * 1.15);
 
-      // flash achat
       const node = storeDiv.children[idx];
       const flash = document.createElement('div'); flash.className = 'boost-appear';
       flash.style.position = 'absolute'; flash.style.inset = '0';
-      node.appendChild(flash); setTimeout(() => flash.remove(), 420);
+      node.appendChild(flash); setTimeout(()=>flash.remove(), 420);
 
-      updateCounterUI && updateCounterUI();
+      if (window.updateCounterUI) window.updateCounterUI();
       if (window.sauvegarderJeu) window.sauvegarderJeu();
       updateStore();
     } else {
       const old = document.body.style.filter;
       document.body.style.filter = 'brightness(.85)';
-      setTimeout(() => document.body.style.filter = old, 220);
+      setTimeout(()=>document.body.style.filter = old, 220);
     }
-  }
-
-  // Reset complet
-  const resetBtn = document.getElementById('resetButton');
-  if (resetBtn) {
-    resetBtn.addEventListener('click', () => {
-      BountyGame.count = 0;
-      BountyGame.multiplier = 1;
-
-      storeItemsData.forEach(item => {
-        item.owned = 0;
-        item.price = item.basePrice;
-      });
-
-      updateCounterUI && updateCounterUI();
-      updateStore();
-    });
-  }
-
-  // Calcul du gain exact par clic
-  function getClickGain() {
-    let gain = 1; // clic de base
-    // ajouter bonus des items Gamelle et Cage
-    gain += (storeItemsData[0].owned * (storeItemsData[0].bonusClick || 0));
-    gain += (storeItemsData[1].owned * (storeItemsData[1].bonusClick || 0));
-
-    // appliquer multiplicateur global si présent
-    gain *= (window.BountyGame.multiplier || 1);
-    return gain;
   }
 
   window.updateStore = updateStore;
@@ -125,14 +84,5 @@
 
   document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => updateStore(), 40);
-
-    const img = document.getElementById('image');
-    if (img) {
-      img.addEventListener('click', () => {
-        const totalGain = getClickGain();
-        window.BountyGame.count += totalGain;
-        updateCounterUI && updateCounterUI();
-      });
-    }
   });
 })();
