@@ -111,11 +111,16 @@ html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,Poppins,Arial;bac
   position: relative; /* nécessaire pour le tooltip */
 }
 
+/* Tooltips animés au-dessus des boutons de la boutique */
+.btn.buy {
+  position: relative; /* nécessaire pour le tooltip */
+}
+
 .tooltip{
   position:absolute;
-  left:calc(100% + 12px);
-  top:50%;
-  transform:translateY(-50%) translateX(-10px); /* départ légèrement décalé */
+  bottom:120%; /* positionné au-dessus du bouton */
+  left:50%;
+  transform:translateX(-50%) translateY(-5px); /* léger décalage pour l'animation */
   background:rgba(2,6,20,0.95);
   padding:8px 10px;
   border-radius:8px;
@@ -125,11 +130,22 @@ html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,Poppins,Arial;bac
   box-shadow:0 14px 40px rgba(0,0,0,0.6);
   opacity:0;
   transition:opacity 0.25s ease, transform 0.25s ease;
-  pointer-events:none; /* ne bloque pas la souris */
+  pointer-events:none;
   z-index:10;
+}
+
+.tooltip::after {
+  content:'';
+  position:absolute;
+  top:100%; /* triangle sous le tooltip */
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color: rgba(2,6,20,0.95) transparent transparent transparent;
 }
 
 .btn.buy:hover .tooltip {
   opacity:1;
-  transform:translateY(-50%) translateX(0); /* glisse vers la position finale */
+  transform:translateX(-50%) translateY(0); /* slide vers la position finale */
 }
