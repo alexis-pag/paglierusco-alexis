@@ -1,4 +1,4 @@
-/* --- Neon / game style + boutique déroulante --- */
+/* Neon / game style */
 :root{
   --glass: rgba(255,255,255,0.06);
   --panel-radius:14px;
@@ -46,6 +46,28 @@ html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,Poppins,Arial;bac
 .shop{border-left:4px solid var(--neon-green)}
 .boosts{border-left:4px solid var(--neon-pink)}
 
+/* scroll area for SHOP and BOOSTS */
+.shop-scroll,
+.boosts-scroll{
+  max-height: calc(100vh - 180px);
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+/* custom scrollbar */
+.shop-scroll::-webkit-scrollbar,
+.boosts-scroll::-webkit-scrollbar{
+  width: 8px;
+}
+.shop-scroll::-webkit-scrollbar-thumb,
+.boosts-scroll::-webkit-scrollbar-thumb{
+  background: var(--neon-green);
+  border-radius: 10px;
+}
+.boosts-scroll::-webkit-scrollbar-thumb{
+  background: var(--neon-pink);
+}
+
 /* header */
 .panel-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .panel-header h1{font-size:1.6rem;margin:0;color:var(--neon-blue);text-shadow:0 4px 18px rgba(0,212,255,0.12)}
@@ -90,9 +112,9 @@ html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,Poppins,Arial;bac
 .buy{background:linear-gradient(90deg,var(--neon-blue),#6effff);color:#021224;box-shadow:0 8px 20px rgba(0,212,255,0.12)}
 .buy:disabled{opacity:.45;cursor:not-allowed}
 .activate{background:linear-gradient(90deg,var(--neon-pink),#ff8ed6);color:#14031f;box-shadow:0 8px 20px rgba(255,60,172,0.08)}
-.reset{background:linear-gradient(90deg,#ff5a5a,#ff2d55);color:#fff;box-shadow:0 10px 30px rgba(255,0,60,0.12);padding:12px 20}
+.reset{background:linear-gradient(90deg,#ff5a5a,#ff2d55);color:#fff;box-shadow:0 10px 30px rgba(255,0,60,0.12);padding:12px 20px}
 
-/* tooltip */
+/* tooltip inside buy buttons */
 .tooltip{
   position:absolute;
   bottom:120%;
@@ -127,26 +149,9 @@ html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,Poppins,Arial;bac
   transform:translateX(-50%) translateY(0);
 }
 
-.boost-appear{animation:boostPop .8s cubic-bezier(.2,.9,.2,1)}
-@keyframes boostPop{0%{transform:scale(.3);opacity:0;filter:brightness(3)}60%{transform:scale(1.08)}100%{transform:scale(1);opacity:1;filter:none}}
-
+/* boosts */
 .boost-active{box-shadow:0 0 18px rgba(155,255,122,0.16);border:1px solid rgba(155,255,122,0.18)}
 
+/* bottom bar */
 .bottom-bar{position:fixed;left:0;right:0;bottom:14px;display:flex;justify-content:center;pointer-events:none}
 .bottom-bar .btn{pointer-events:all}
-
-/* --- Boutique déroulante à la molette --- */
-.shop {
-  overflow: hidden;
-  max-height: 60px; /* hauteur du header fermé */
-  transition: max-height 0.35s ease, padding 0.35s ease;
-}
-
-.shop.open {
-  max-height: 800px; /* hauteur ouverte du panel boutique */
-  padding: 14px;
-}
-
-.shop .panel-header {
-  cursor: ns-resize; /* pour indiquer que la molette contrôle le menu */
-}
