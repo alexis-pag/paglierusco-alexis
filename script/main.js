@@ -1,25 +1,26 @@
 (() => {
-  // Variables principales
+  // Initialisation
   window.BountyGame = window.BountyGame || {};
-  if (window.BountyGame.count === undefined) window.BountyGame.count = 0;
-  if (window.BountyGame.clickValue === undefined) window.BountyGame.clickValue = 1;
-  if (window.BountyGame.addClickBonus === undefined) window.BountyGame.addClickBonus = 0;
-  if (window.BountyGame.addCageBonus === undefined) window.BountyGame.addCageBonus = 0;
+  window.BountyGame.count = window.BountyGame.count || 0;
+  window.BountyGame.clickValue = window.BountyGame.clickValue || 1;
+  window.BountyGame.addClickBonus = window.BountyGame.addClickBonus || 0; // Gamelle
+  window.BountyGame.addCageBonus = window.BountyGame.addCageBonus || 0;   // Cage
+  window.BountyGame.cps = window.BountyGame.cps || 0;
 
-  const counter = document.getElementById("counter");
-  const cpsDisplay = document.getElementById("cps");
-  const img = document.getElementById("image");
-  const clickSound = document.getElementById("clickSound");
-  const storeItemsDiv = document.getElementById("storeItems");
-  const resetButton = document.getElementById("resetButton");
+  const img = document.getElementById('image');
+  const counterEl = document.getElementById('counter');
+  const cpsEl = document.getElementById('cps');
+  const resetButton = document.getElementById('resetButton');
+  const clickSound = document.getElementById('clickSound');
+  const storeItemsDiv = document.getElementById('storeItems');
 
-  // Shop toggle
-  const shopPanel = document.querySelector('.shop');
-  const shopHeader = shopPanel.querySelector('.panel-header');
-  shopHeader.addEventListener('click', () => shopPanel.classList.toggle('open'));
-  shopPanel.classList.remove('open'); // fermé au départ
+  // Update counters
+  function updateUI() {
+    counterEl.textContent = `Croquettes : ${Math.floor(window.BountyGame.count)}`;
+    cpsEl.textContent = `CPS : ${Math.floor(window.BountyGame.cps)}`;
+  }
 
-  // Plus-one animation
+  // +1 visuel
   function spawnPlusOne(x, y, gain){
     const p = document.createElement("div");
     p.className = "plus-one";
@@ -27,108 +28,158 @@
     p.style.top = y + "px";
     p.textContent = "+" + gain;
     document.body.appendChild(p);
-    setTimeout(() => p.remove(), 900);
+    setTimeout(()=>p.remove(), 900);
   }
 
-  // Update UI
-  function updateUI(){
-    counter.textContent = "Croquettes : " + Math.floor(window.BountyGame.count);
-    cpsDisplay.textContent = "CPS : 0";
-    renderStore();
-  }
-
-  // Click handler
-  img.addEventListener('click', (e)=>{
-    clickSound.currentTime = 0; clickSound.play();
-    let gain = window.BountyGame.clickValue + window.BountyGame.addClickBonus + window.BountyGame.addCageBonus;
-    window.BountyGame.count += gain;
-    spawnPlusOne(e.clientX, e.clientY, gain);
-    updateUI();
-    saveGame();
-  });
-
-  // Store items
-  const storeItemsData = [
-    { name: "Gamelle de croquette", price: 10, bonusClick: 1, auto: 0, owned: 0 },
-    { name: "Cage à croquette", price: 50, bonusClick: 5, auto: 0, owned: 0 },
-    { name: "Paquet de croquette", price: 100, bonusClick: 0, auto: 1, owned: 0 }
-  ];
-
+  // Boutique
   function renderStore(){
     storeItemsDiv.innerHTML = "";
-    storeItemsData.forEach((item, idx)=>{
+    (window.storeItemsData || []).forEach((item, idx)=>{
       const div = document.createElement("div");
       div.className = "item";
-      div.innerHTML = `<strong>${item.name}</strong> <div>Prix: ${item.price}</div>`;
+
+      const left = document.createElement("div");
+      left.className = "left";
+      const imgIcon = document.createElement("img");
+      imgIcon.src = item.icon;
+      imgIcon.className = "icon";
+      const txt = document.createElement("div");
+      txt.innerHTML = `<strong>${item.name}</strong><div style="font-size:12px;color:rgba(255,255,255,0.7)">Prix: ${Math.floor(item.price)}</div>`;
+      left.appendChild(imgIcon); left.appendChild(txt);
+
+      const right = document.createElement("div");
       const btn = document.createElement("button");
       btn.className = "btn buy";
       btn.textContent = "Acheter";
       btn.disabled = window.BountyGame.count < item.price;
+
       btn.addEventListener("click", ()=>{
         if(window.BountyGame.count >= item.price){
           window.BountyGame.count -= item.price;
+
+          // Bonus par clic
           if(item.bonusClick){
             if(item.name === "Gamelle de croquette") window.BountyGame.addClickBonus += item.bonusClick;
             if(item.name === "Cage à croquette") window.BountyGame.addCageBonus += item.bonusClick;
           }
+
           item.owned++;
           item.price = Math.round(item.price * 1.4);
+
           updateUI();
           saveGame();
+          renderStore(); // réactive les boutons
         }
       });
-      div.appendChild(btn);
+
+      // Tooltip
+      const tooltip = document.createElement("span");
+      tooltip.className = "tooltip";
+      if(item.bonusClick) tooltip.textContent = `+${item.bonusClick} par clic !`;
+      else if(item.auto) tooltip.textContent = `+${item.auto} auto-croquettes !`;
+      btn.appendChild(tooltip);
+
+      right.appendChild(btn);
+      div.appendChild(left);
+      div.appendChild(right);
+
+      const badge = document.createElement("div");
+      badge.className = "count-badge";
+      badge.textContent = item.owned;
+      div.appendChild(badge);
+
       storeItemsDiv.appendChild(div);
     });
   }
 
-  // Save/load
+  // Click principal
+  img.addEventListener("click", (e)=>{
+    clickSound.currentTime = 0;
+    clickSound.play();
+
+    const gain = window.BountyGame.clickValue + window.BountyGame.addClickBonus + window.BountyGame.addCageBonus;
+    window.BountyGame.count += gain;
+
+    spawnPlusOne(e.clientX, e.clientY, gain);
+    updateUI();
+    renderStore();
+    saveGame();
+  });
+
+  // CPS automatique
+  setInterval(()=>{
+    let totalCPS = 0;
+    (window.storeItemsData || []).forEach(it=>{
+      if(it.auto && it.owned) totalCPS += it.auto * it.owned;
+    });
+    window.BountyGame.count += totalCPS;
+    window.BountyGame.cps = totalCPS;
+    updateUI();
+    renderStore();
+  }, 1000);
+
+  // Sauvegarde / Load
   function saveGame(){
     const data = {
       count: window.BountyGame.count,
       clickValue: window.BountyGame.clickValue,
       addClickBonus: window.BountyGame.addClickBonus,
       addCageBonus: window.BountyGame.addCageBonus,
-      storeItemsData
+      cps: window.BountyGame.cps,
+      storeItems: (window.storeItemsData || []).map(it=>({owned: it.owned, price: it.price}))
     };
     localStorage.setItem("bountySave", JSON.stringify(data));
   }
 
   function loadGame(){
-    const data = JSON.parse(localStorage.getItem("bountySave"));
-    if(!data) return;
-    window.BountyGame.count = data.count ?? window.BountyGame.count;
-    window.BountyGame.clickValue = data.clickValue ?? window.BountyGame.clickValue;
-    window.BountyGame.addClickBonus = data.addClickBonus ?? window.BountyGame.addClickBonus;
-    window.BountyGame.addCageBonus = data.addCageBonus ?? window.BountyGame.addCageBonus;
-    if(data.storeItemsData){
-      data.storeItemsData.forEach((item, i)=>{
-        if(storeItemsData[i]){
-          storeItemsData[i].owned = item.owned ?? storeItemsData[i].owned;
-          storeItemsData[i].price = item.price ?? storeItemsData[i].price;
-        }
-      });
-    }
+    const raw = localStorage.getItem("bountySave");
+    if(!raw) return;
+    try{
+      const data = JSON.parse(raw);
+      window.BountyGame.count = data.count ?? window.BountyGame.count;
+      window.BountyGame.clickValue = data.clickValue ?? window.BountyGame.clickValue;
+      window.BountyGame.addClickBonus = data.addClickBonus ?? window.BountyGame.addClickBonus;
+      window.BountyGame.addCageBonus = data.addCageBonus ?? window.BountyGame.addCageBonus;
+      window.BountyGame.cps = data.cps ?? window.BountyGame.cps;
+
+      if(Array.isArray(data.storeItems) && Array.isArray(window.storeItemsData)){
+        data.storeItems.forEach((s,i)=>{
+          if(window.storeItemsData[i]){
+            window.storeItemsData[i].owned = s.owned ?? window.storeItemsData[i].owned;
+            window.storeItemsData[i].price = s.price ?? window.storeItemsData[i].price;
+          }
+        });
+      }
+    }catch(e){ console.warn("Load error", e); }
   }
 
   // Reset
-  resetButton.addEventListener('click', ()=>{
-    if(!confirm("Réinitialiser le jeu ?")) return;
+  resetButton.addEventListener("click", ()=>{
+    if(!confirm("Réinitialiser le jeu et supprimer la sauvegarde ?")) return;
     window.BountyGame.count = 0;
     window.BountyGame.clickValue = 1;
     window.BountyGame.addClickBonus = 0;
     window.BountyGame.addCageBonus = 0;
-    storeItemsData.forEach(it => { it.owned = 0; it.price = it.price; });
-    updateUI();
+    window.BountyGame.cps = 0;
+    (window.storeItemsData || []).forEach(it=>{ it.owned = 0; it.price = it.basePrice ?? it.price; });
     saveGame();
+    updateUI();
+    renderStore();
   });
 
-  // Auto CPS placeholder
-  setInterval(()=>{ updateUI(); saveGame(); }, 1000);
-
-  // Initial load
+  // Shop déroulant
   document.addEventListener('DOMContentLoaded', ()=>{
+    const shopPanel = document.querySelector('.shop');
+    const shopHeader = shopPanel.querySelector('.panel-header');
+    shopHeader.addEventListener('click', ()=>{
+      shopPanel.classList.toggle('open');
+    });
+
     loadGame();
     updateUI();
+    renderStore();
   });
+
+  // Sauvegarde périodique
+  setInterval(saveGame, 60000);
 })();
