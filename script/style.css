@@ -155,3 +155,26 @@ html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,Poppins,Arial;bac
 /* bottom bar */
 .bottom-bar{position:fixed;left:0;right:0;bottom:14px;display:flex;justify-content:center;pointer-events:none}
 .bottom-bar .btn{pointer-events:all}
+/* ========= MENU DÉROULANT SHOP ========= */
+
+.shop {
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+  max-height: 60px; /* hauteur du header, fermé */
+}
+
+/* quand ouvert */
+.shop.open {
+  max-height: 1200px; /* assez grand pour afficher tous les items */
+}
+
+/* rendre le header cliquable */
+.shop .panel-header {
+  cursor: pointer;
+  user-select: none;
+}
+
+/* éviter les sélections gênantes */
+.shop .panel-header h2 {
+  pointer-events: none;
+}
