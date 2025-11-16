@@ -3,21 +3,47 @@
   window.BountyGame = window.BountyGame || {};
   window.BountyGame.count = window.BountyGame.count || 0;
   window.BountyGame.clickValue = window.BountyGame.clickValue || 1;
-  window.BountyGame.addClickBonus = window.BountyGame.addClickBonus || 0; // Gamelle
-  window.BountyGame.addCageBonus = window.BountyGame.addCageBonus || 0;   // Cage
+  window.BountyGame.addClickBonus = window.BountyGame.addClickBonus || 0;
+  window.BountyGame.addCageBonus = window.BountyGame.addCageBonus || 0;
   window.BountyGame.cps = window.BountyGame.cps || 0;
+  window.BountyGame.rebirthCount = window.BountyGame.rebirthCount || 0;
+  window.BountyGame.rebirthMultiplier = window.BountyGame.rebirthMultiplier || 1;
 
   const img = document.getElementById('image');
   const counterEl = document.getElementById('counter');
   const cpsEl = document.getElementById('cps');
   const resetButton = document.getElementById('resetButton');
-  const clickSound = document.getElementById('clickSound');
   const storeItemsDiv = document.getElementById('storeItems');
+  const clickSound = document.getElementById('clickSound');
 
-  // Update counters
+  // Création du bouton Rebirth
+  const rebirthContainer = document.createElement('div');
+  rebirthContainer.style.position = 'absolute';
+  rebirthContainer.style.left = '20px';
+  rebirthContainer.style.top = '50%';
+  rebirthContainer.style.transform = 'translateY(-50%)';
+  rebirthContainer.style.display = 'flex';
+  rebirthContainer.style.flexDirection = 'column';
+  rebirthContainer.style.gap = '8px';
+  document.body.appendChild(rebirthContainer);
+
+  const rebirthButton = document.createElement('button');
+  rebirthButton.className = 'btn reset';
+  rebirthButton.textContent = 'Rebirth';
+  rebirthButton.style.width = '120px';
+  rebirthContainer.appendChild(rebirthButton);
+
+  const rebirthLabel = document.createElement('div');
+  rebirthLabel.style.color = '#fff';
+  rebirthLabel.style.fontWeight = '700';
+  rebirthLabel.textContent = `Rebirths : ${window.BountyGame.rebirthCount}`;
+  rebirthContainer.appendChild(rebirthLabel);
+
+  // Update UI
   function updateUI() {
     counterEl.textContent = `Croquettes : ${Math.floor(window.BountyGame.count)}`;
     cpsEl.textContent = `CPS : ${Math.floor(window.BountyGame.cps)}`;
+    rebirthLabel.textContent = `Rebirths : ${window.BountyGame.rebirthCount}`;
   }
 
   // +1 visuel
@@ -57,7 +83,6 @@
         if(window.BountyGame.count >= item.price){
           window.BountyGame.count -= item.price;
 
-          // Bonus par clic
           if(item.bonusClick){
             if(item.name === "Gamelle de croquette") window.BountyGame.addClickBonus += item.bonusClick;
             if(item.name === "Cage à croquette") window.BountyGame.addCageBonus += item.bonusClick;
@@ -68,11 +93,10 @@
 
           updateUI();
           saveGame();
-          renderStore(); // réactive les boutons
+          renderStore();
         }
       });
 
-      // Tooltip
       const tooltip = document.createElement("span");
       tooltip.className = "tooltip";
       if(item.bonusClick) tooltip.textContent = `+${item.bonusClick} par clic !`;
@@ -97,7 +121,7 @@
     clickSound.currentTime = 0;
     clickSound.play();
 
-    const gain = window.BountyGame.clickValue + window.BountyGame.addClickBonus + window.BountyGame.addCageBonus;
+    const gain = (window.BountyGame.clickValue + window.BountyGame.addClickBonus + window.BountyGame.addCageBonus) * window.BountyGame.rebirthMultiplier;
     window.BountyGame.count += gain;
 
     spawnPlusOne(e.clientX, e.clientY, gain);
@@ -112,11 +136,31 @@
     (window.storeItemsData || []).forEach(it=>{
       if(it.auto && it.owned) totalCPS += it.auto * it.owned;
     });
+    totalCPS *= window.BountyGame.rebirthMultiplier;
     window.BountyGame.count += totalCPS;
     window.BountyGame.cps = totalCPS;
     updateUI();
     renderStore();
   }, 1000);
+
+  // Rebirth
+  rebirthButton.addEventListener('click', ()=>{
+    if(!confirm("Faire un Rebirth ? Cela remet le compteur à zéro mais augmente le multiplicateur !")) return;
+    window.BountyGame.count = 0;
+    window.BountyGame.clickValue = 1;
+    window.BountyGame.addClickBonus = 0;
+    window.BountyGame.addCageBonus = 0;
+    window.BountyGame.cps = 0;
+    (window.storeItemsData || []).forEach(it=>{ it.owned = 0; it.price = it.basePrice ?? it.price; });
+
+    // Incrément du Rebirth
+    window.BountyGame.rebirthCount++;
+    window.BountyGame.rebirthMultiplier = 1 + window.BountyGame.rebirthCount * 0.1; // chaque rebirth +10% gain
+
+    saveGame();
+    updateUI();
+    renderStore();
+  });
 
   // Sauvegarde / Load
   function saveGame(){
@@ -126,6 +170,8 @@
       addClickBonus: window.BountyGame.addClickBonus,
       addCageBonus: window.BountyGame.addCageBonus,
       cps: window.BountyGame.cps,
+      rebirthCount: window.BountyGame.rebirthCount,
+      rebirthMultiplier: window.BountyGame.rebirthMultiplier,
       storeItems: (window.storeItemsData || []).map(it=>({owned: it.owned, price: it.price}))
     };
     localStorage.setItem("bountySave", JSON.stringify(data));
@@ -141,6 +187,8 @@
       window.BountyGame.addClickBonus = data.addClickBonus ?? window.BountyGame.addClickBonus;
       window.BountyGame.addCageBonus = data.addCageBonus ?? window.BountyGame.addCageBonus;
       window.BountyGame.cps = data.cps ?? window.BountyGame.cps;
+      window.BountyGame.rebirthCount = data.rebirthCount ?? window.BountyGame.rebirthCount;
+      window.BountyGame.rebirthMultiplier = data.rebirthMultiplier ?? window.BountyGame.rebirthMultiplier;
 
       if(Array.isArray(data.storeItems) && Array.isArray(window.storeItemsData)){
         data.storeItems.forEach((s,i)=>{
@@ -161,6 +209,8 @@
     window.BountyGame.addClickBonus = 0;
     window.BountyGame.addCageBonus = 0;
     window.BountyGame.cps = 0;
+    window.BountyGame.rebirthCount = 0;
+    window.BountyGame.rebirthMultiplier = 1;
     (window.storeItemsData || []).forEach(it=>{ it.owned = 0; it.price = it.basePrice ?? it.price; });
     saveGame();
     updateUI();
