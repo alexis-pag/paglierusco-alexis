@@ -1,5 +1,3 @@
-
-
 (() => {
 
   window.BountyGame = window.BountyGame || {};
@@ -9,12 +7,10 @@
   if (window.BountyGame.addCageBonus === undefined) window.BountyGame.addCageBonus = 0;  
   if (window.BountyGame.cps === undefined) window.BountyGame.cps = 0;
 
-
   if (window.BountyGame.rebirths === undefined) window.BountyGame.rebirths = 0;
   if (window.BountyGame.rebirthBonusClick === undefined) window.BountyGame.rebirthBonusClick = 0;
   if (window.BountyGame.rebirthBonusCPS === undefined) window.BountyGame.rebirthBonusCPS = 0;
   if (window.BountyGame.rebirthPrice === undefined) window.BountyGame.rebirthPrice = 1_000_000;
-
 
   const imgEl = document.getElementById('image');
   const counterEl = document.getElementById('counter');
@@ -25,7 +21,6 @@
   const storeDiv = document.getElementById('storeItems');
   const boostsDiv = document.getElementById('boostsContainer');
 
- 
   const images = [
     'image/bounty.jpg','image/bounty2.jpg','image/bounty3.jpg',
     'image/bounty4.jpg','image/bounty5.jpg','image/bounty6.jpg',
@@ -40,12 +35,10 @@
     imgEl.src = images[idx];
   }
 
-
   function spawnPlusOne(x, y, value){
     const el = document.createElement('div');
     el.className = 'plus-one';
     el.textContent = `+${Math.floor(value)}`;
-  
     const left = Math.min(window.innerWidth - 60, Math.max(8, x));
     const top = Math.min(window.innerHeight - 40, Math.max(8, y));
     el.style.left = left + 'px';
@@ -54,13 +47,11 @@
     setTimeout(()=>el.remove(), 950);
   }
 
- 
   function updateCounterUI(){
     if (counterEl) counterEl.textContent = `Croquettes : ${Math.floor(window.BountyGame.count)} (×${(window.BountyGame.multiplier ?? 1)})`;
     if (cpsEl) cpsEl.textContent = `CPS : ${Math.floor(window.BountyGame.cps)}`;
   }
   window.updateCounterUI = updateCounterUI;
-
 
   function calculCPS(){
     let total = 0;
@@ -70,14 +61,12 @@
     items.forEach(it => {
       if (it.auto && it.owned) {
         let gain = it.auto * it.owned;
- 
         if (boosts[1] && boosts[1].active) gain *= 2;
-        if (boosts[4] && boosts[4].active) gain *= 1.05; 
+        if (boosts[4] && boosts[4].active) gain *= 1.05;
         total += gain;
       }
     });
 
- 
     total += (window.BountyGame.rebirthBonusCPS || 0);
 
     return total;
@@ -87,11 +76,10 @@
     imgEl.addEventListener('click', (ev) => {
       try { if (clickSound) { clickSound.currentTime = 0; clickSound.volume = 0.9; clickSound.play(); } } catch(e){}
 
-    
       let bonus = window.BountyGame.multiplier ?? 1;
 
       const boosts = window.boostsData || [];
-      if (boosts[0] && boosts[0].active) bonus *= 1.5; 
+      if (boosts[0] && boosts[0].active) bonus *= 1.5;
       if (boosts[2] && boosts[2].active) {
         if (Math.random() < 0.5) bonus = 0;
         else bonus *= 2;
@@ -163,8 +151,7 @@
 
       window.BountyGame.rebirths = data.rebirths ?? window.BountyGame.rebirths;
       window.BountyGame.rebirthPrice = data.rebirthPrice ?? window.BountyGame.rebirthPrice;
-      window.BountyGame.rebirthBonusClick = data.rebirthBonusClick ?? window.BountyGame.rebirthBonusClick;
-      window.BountyGame.rebirthBonusCPS = data.rebirthBonusCPS ?? window.BountyGame.rebirthBonusCPS;
+      applyRebirthBonus();
 
       if (Array.isArray(data.storeItems) && Array.isArray(window.storeItemsData)) {
         data.storeItems.forEach((s,i) => {
@@ -196,18 +183,24 @@
       window.BountyGame.addClickBonus = 0;
       window.BountyGame.addCageBonus = 0;
       window.BountyGame.cps = 0;
+
       (window.storeItemsData || []).forEach(it => { it.owned = 0; it.price = it.basePrice ?? it.price; });
-      (window.boostsData || []).forEach(b => { b.active = false; b.available = false; b.permanent = false; });
+      (window.boostsData || []).forEach(b => { b.active = false; b.available = false; });
+
+      // Le rebirth reste et applique son bonus
+      applyRebirthBonus();
+
       sauvegarderJeu();
       if (typeof window.updateStore === 'function') window.updateStore();
       if (typeof window.afficherBoosts === 'function') window.afficherBoosts();
       updateCounterUI();
+      updateRebirthUI();
     });
   }
 
   function applyRebirthBonus(){
-    window.BountyGame.rebirthBonusClick = (window.BountyGame.rebirths || 0) * 1;   
-    window.BountyGame.rebirthBonusCPS = (window.BountyGame.rebirths || 0) * 0.2;  
+    window.BountyGame.rebirthBonusClick = (window.BountyGame.rebirths || 0) * 1;
+    window.BountyGame.rebirthBonusCPS = (window.BountyGame.rebirths || 0) * 0.2;
   }
   applyRebirthBonus();
 
@@ -270,7 +263,7 @@
       window.BountyGame.cps = 0;
 
       (window.storeItemsData || []).forEach(it => { it.owned = 0; it.price = it.basePrice ?? it.price; });
-      (window.boostsData || []).forEach(b => { b.active = false; b.available = false; /* keep permanent as is */ });
+      (window.boostsData || []).forEach(b => { b.active = false; b.available = false; });
 
       applyRebirthBonus();
 
