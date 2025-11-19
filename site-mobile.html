@@ -2,93 +2,76 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-
-  <!-- Optimisation mobile Android + iPhone -->
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-  <meta name="touch-action" content="manipulation">
-
-  <!-- Icônes (facultatif, tu peux remplacer les fichiers) -->
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <link rel="icon" sizes="192x192" href="icons/icon-192.png">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>Bounty Clicker - Mobile</title>
-  <link rel="stylesheet" href="script/css-mobile.css" />
+  <!-- CSS mobile -->
+  <link rel="stylesheet" href="script/css-mobile.css">
 </head>
-
 <body>
+  <a href="https://github.com/alexis-pag/paglierusco-alexis" id="githubButton" target="_blank">code source</a>
 
-  <div class="bg"></div>
+  <div class="bg-animated"></div>
 
-  <header class="top">
-    <h1>Bounty Clicker</h1>
-    <div class="stats">
-      <div id="counter">Croquettes : 0</div>
-      <div id="cps">CPS : 0</div>
-    </div>
-  </header>
+  <div class="layout">
+    <!-- Clicker -->
+    <section class="panel clicker">
+      <header class="panel-header">
+        <h1>Bounty Clicker</h1>
+        <div class="counters">
+          <div id="counter">Croquettes : 0</div>
+          <div id="cps">CPS : 0</div>
+        </div>
+      </header>
+      <main class="panel-main">
+        <div class="image-wrap">
+          <img id="image" src="image/bounty.jpg" alt="Bounty">
+        </div>
+      </main>
+    </section>
 
-  <main class="center-zone">
-    <img id="image" src="image/bounty.jpg" alt="Bounty">
-  </main>
+    <!-- Shop -->
+    <aside class="panel shop" id="shopPanel">
+      <header class="panel-header" id="shopHeader">
+        <h2>Boutique</h2>
+      </header>
+      <div class="panel-main" id="shopContent">
+        <div id="storeItems" class="list shop-scroll"></div>
+      </div>
+    </aside>
 
-  <section class="panel" id="shop">
-    <h2>Boutique</h2>
-    <div id="storeItems" class="scroll"></div>
-  </section>
+    <!-- Boosts -->
+    <aside class="panel boosts">
+      <header class="panel-header"><h2>Boosts & Bonus</h2></header>
+      <div class="panel-main">
+        <div id="boostsContainer" class="list boosts-scroll"></div>
+      </div>
+    </aside>
+  </div>
 
-  <section class="panel" id="boosts">
-    <h2>Boosts</h2>
-    <div id="boostsContainer" class="scroll"></div>
-  </section>
+  <div id="rebirthContainer">
+    <button id="rebirthButton">Rebirth</button>
+    <div id="rebirthInfo">Rebirths : 0</div>
+  </div>
 
-  <section class="rebirth-zone">
-    <button id="rebirthButton" class="btn">Rebirth</button>
-    <div id="rebirthCount">Rebirths : 0</div>
-  </section>
-
-  <footer class="footer">
+  <footer class="bottom-bar">
     <button id="resetButton" class="btn reset">Réinitialiser</button>
   </footer>
 
-  <audio id="clickSound" src="script/audio/Mouse Click Sound Effect.mp3" preload="auto"></audio>
-
+  <!-- scripts -->
   <script src="script/boutique.js" defer></script>
   <script src="script/boost.js" defer></script>
   <script src="script/main.js" defer></script>
 
   <script>
-    /* Activation audio iPhone */
-    document.addEventListener("touchstart", () => {
-      const s = document.getElementById("clickSound");
-      s.volume = 1;
-    }, { once: true });
-
-    /* Animation du clic + +1 */
+    // Menu déroulant shop
     document.addEventListener('DOMContentLoaded', () => {
-      const image = document.getElementById("image");
-
-      image.addEventListener("click", (e) => {
-        image.classList.add("click-anim");
-        setTimeout(() => image.classList.remove("click-anim"), 120);
-
-        const plus = document.createElement("div");
-        plus.className = "plus-one";
-        plus.textContent = "+1";
-        document.body.appendChild(plus);
-
-        plus.style.left = e.clientX + "px";
-        plus.style.top = e.clientY + "px";
-
-        setTimeout(() => plus.remove(), 700);
+      const shopPanel = document.getElementById('shopPanel');
+      const shopHeader = document.getElementById('shopHeader');
+      shopPanel.classList.remove('open');
+      shopHeader.addEventListener('click', () => {
+        shopPanel.classList.toggle('open');
       });
     });
   </script>
-
 </body>
 </html>
