@@ -1,10 +1,10 @@
 (() => {
   window.storeItemsData = [
-    // ITEMS CLIQUE (bonusClick)
+   
     { name: "Gamelle de croquette", price: 15, bonusClick: 1, auto: 0, owned: 0, icon: "script/image/gamelle.png" },
     { name: "Cage à croquette", price: 65, bonusClick: 5, auto: 0, owned: 0, icon: "script/image/cage.png" },
 
-    // ITEMS CPS (auto)
+  
     { name: "Paquet de croquette", price: 130, auto: 1, owned: 0, icon: "script/image/paquet.png" },
     { name: "Petit sac de croquettes", price: 260, auto: 2, owned: 0, icon: "script/image/petit_sac.png" },
     { name: "Arbre à croquettes", price: 455, auto: 3, owned: 0, icon: "script/image/arbre.png" },
@@ -14,7 +14,7 @@
     { name: "Ferme de croquettes", price: 2600, auto: 20, owned: 0, icon: "script/image/ferme.png" },
     { name: "Chien distributeur", price: 4550, auto: 30, owned: 0, icon: "script/image/chien.png" },
 
-    // BOOSTED CPS pour les 5 derniers items
+
     { name: "Mini usine de croquettes", price: 6500, auto: 80, owned: 0, icon: "script/image/mini_usine.png" },
     { name: "Usine de croquettes", price: 10400, auto: 120, owned: 0, icon: "script/image/usine.png" },
     { name: "Station de production canine", price: 15600, auto: 180, owned: 0, icon: "script/image/station.png" },
@@ -29,7 +29,7 @@
     { name: "Temple de croquettes", price: 1300000, auto: 20000, owned: 0, icon: "script/image/temple.png" }
   ];
 
-  // Base price pour reset
+
   window.storeItemsData.forEach(it => { if (it.basePrice === undefined) it.basePrice = it.price; });
 
   const storeDiv = document.getElementById('storeItems');
