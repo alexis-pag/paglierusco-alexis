@@ -1,112 +1,43 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page d'accueil</title>
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #74ebd5, #acb6e5);
-            color: #fff;
-            overflow: hidden;
-        }
-
-        h1 {
-            font-size: 3em;
-            margin-bottom: 50px;
-            text-shadow: 2px 2px 10px rgba(0,0,0,0.2);
-            animation: fadeIn 1.5s ease-in-out;
-        }
-
-        .button {
-            display: inline-block;
-            padding: 18px 40px;
-            margin: 15px;
-            font-size: 20px;
-            color: #fff;
-            background: linear-gradient(45deg, #ff6a00, #ee0979);
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            text-decoration: none;
-            transition: transform 0.3s, box-shadow 0.3s, background 0.5s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            animation: buttonPulse 2s infinite;
-        }
-
-        .button:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            background: linear-gradient(45deg, #ee0979, #ff6a00);
-        }
-
-        @keyframes fadeIn {
-            0% { opacity: 0; transform: translateY(-20px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes buttonPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        #logoutButton {
-            margin-top: 20px;
-            padding: 12px 30px;
-            font-size: 18px;
-            background: linear-gradient(45deg, #ff0000, #ff4500);
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            color: #fff;
-        }
-
-        #logoutButton:hover {
-            background: linear-gradient(45deg, #ff4500, #ff0000);
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page d'accueil - Bounty Clicker</title>
+  <link rel="stylesheet" href="style/style.css">
 </head>
 <body>
-    <h1>Bonjour, veuillez choisir la bonne version du site</h1>
+  <h1>Bonjour, veuillez choisir la bonne version du site</h1>
 
-    <a id="pcVersion" href="site.html" class="button">version PC</a>
-    <a id="mobileVersion" href="site-mobile.html" class="button">version mobile</a>
+  <a id="pcVersion" href="site.html" class="button">Version PC</a>
+  <a id="mobileVersion" href="site-mobile.html" class="button">Version mobile</a>
 
-    <button id="logoutButton">Se déconnecter</button>
+  <button id="logoutButton">Se déconnecter</button>
 
-    <!-- Firebase Auth -->
-    <script type="module">
-        import { auth, onAuthStateChanged, signOut } from "./script/auth.js";
+  <script type="module">
+    import { auth, onAuthStateChanged, signOut } from './script/auth.js';
 
-        const logoutBtn = document.getElementById('logoutButton');
-        const pcLink = document.getElementById('pcVersion');
-        const mobileLink = document.getElementById('mobileVersion');
+    const logoutBtn = document.getElementById('logoutButton');
+    const pcLink = document.getElementById('pcVersion');
+    const mobileLink = document.getElementById('mobileVersion');
 
-        // Masquer les liens par défaut
-        pcLink.style.display = 'none';
-        mobileLink.style.display = 'none';
-        logoutBtn.style.display = 'none';
+    pcLink.style.display = 'none';
+    mobileLink.style.display = 'none';
+    logoutBtn.style.display = 'none';
 
-        onAuthStateChanged(auth, user => {
-            if (user) {
-                pcLink.style.display = 'inline-block';
-                mobileLink.style.display = 'inline-block';
-                logoutBtn.style.display = 'inline-block';
-            } else {
-                window.location.href = "login.html";
-            }
-        });
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        pcLink.style.display = 'inline-block';
+        mobileLink.style.display = 'inline-block';
+        logoutBtn.style.display = 'inline-block';
+      } else {
+        window.location.href = "login.html";
+      }
+    });
 
-        logoutBtn.addEventListener('click', () => {
-            signOut(auth).then(() => window.location.href = "login.html");
-        });
-    </script>
+    logoutBtn.addEventListener('click', () => {
+      signOut(auth).then(() => window.location.href = "login.html");
+    });
+  </script>
 </body>
 </html>
