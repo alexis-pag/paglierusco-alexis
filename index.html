@@ -1,43 +1,19 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Page d'accueil - Bounty Clicker</title>
-  <link rel="stylesheet" href="style/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bounty Game</title>
+<link rel="stylesheet" href="script/style.css">
 </head>
 <body>
-  <h1>Bonjour, veuillez choisir la version du site</h1>
-
-  <a id="pcVersion" href="site.html" class="button">Version PC</a>
-  <a id="mobileVersion" href="site-mobile.html" class="button">Version mobile</a>
-
-  <button id="logoutButton">Se déconnecter</button>
-
-  <script type="module">
-    import { auth, onAuthStateChanged, signOut } from './script/auth.js';
-
-    const logoutBtn = document.getElementById('logoutButton');
-    const pcLink = document.getElementById('pcVersion');
-    const mobileLink = document.getElementById('mobileVersion');
-
-    pcLink.style.display = 'none';
-    mobileLink.style.display = 'none';
-    logoutBtn.style.display = 'none';
-
-    onAuthStateChanged(auth, user => {
-      if (user) {
-        pcLink.style.display = 'inline-block';
-        mobileLink.style.display = 'inline-block';
-        logoutBtn.style.display = 'inline-block';
-      } else {
-        window.location.href = "login.html";
-      }
-    });
-
-    logoutBtn.addEventListener('click', () => {
-      signOut(auth).then(() => window.location.href = "login.html");
-    });
-  </script>
+<script src="script/auth.js"></script>
+<script>
+  if (!getCurrentUser()) {
+    window.location.href = 'login.html';
+  } else {
+    window.location.href = 'site.html';
+  }
+</script>
 </body>
 </html>
