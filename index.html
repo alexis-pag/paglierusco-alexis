@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Page d'accueil</title>
     <style>
-      
         body {
             display: flex;
             flex-direction: column;
@@ -26,7 +25,6 @@
             animation: fadeIn 1.5s ease-in-out;
         }
 
-    
         .button {
             display: inline-block;
             padding: 18px 40px;
@@ -49,7 +47,6 @@
             background: linear-gradient(45deg, #ee0979, #ff6a00);
         }
 
-   
         @keyframes fadeIn {
             0% { opacity: 0; transform: translateY(-20px); }
             100% { opacity: 1; transform: translateY(0); }
@@ -59,11 +56,57 @@
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
         }
+
+        #logoutButton {
+            margin-top: 20px;
+            padding: 12px 30px;
+            font-size: 18px;
+            background: linear-gradient(45deg, #ff0000, #ff4500);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        #logoutButton:hover {
+            background: linear-gradient(45deg, #ff4500, #ff0000);
+        }
     </style>
 </head>
 <body>
-    <h1>Bonjour , veuillez choisir la bonne version du site</h1>
-    <a href="site.html" class="button">version pc</a>
-    <a href="site-mobile.html" class="button">version mobile</a>
+    <h1>Bonjour, veuillez choisir la bonne version du site</h1>
+
+    <a id="pcVersion" href="site.html" class="button">version PC</a>
+    <a id="mobileVersion" href="site-mobile.html" class="button">version mobile</a>
+
+    <button id="logoutButton">Se déconnecter</button>
+
+    <!-- Firebase Auth -->
+    <script type="module">
+        import { auth, onAuthStateChanged, signOut } from "./script/auth.js";
+
+        const logoutBtn = document.getElementById('logoutButton');
+        const pcLink = document.getElementById('pcVersion');
+        const mobileLink = document.getElementById('mobileVersion');
+
+        // Masquer les liens par défaut
+        pcLink.style.display = 'none';
+        mobileLink.style.display = 'none';
+        logoutBtn.style.display = 'none';
+
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                pcLink.style.display = 'inline-block';
+                mobileLink.style.display = 'inline-block';
+                logoutBtn.style.display = 'inline-block';
+            } else {
+                window.location.href = "login.html";
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            signOut(auth).then(() => window.location.href = "login.html");
+        });
+    </script>
 </body>
 </html>
