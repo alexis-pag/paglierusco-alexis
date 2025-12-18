@@ -46,7 +46,7 @@
     const img = document.createElement('img'); img.className = 'icon'; img.src = item.icon;
     const txt = document.createElement('div');
     txt.innerHTML = `<strong>${item.name}</strong><div style="font-size:12px;color:rgba(255,255,255,0.7)">Prix: ${item.price}</div>`;
-    left.appendChild(img); left.appendChild(txt);
+    left.appendChild(img); left.appendChild(txt); 
 
     const right = document.createElement('div');
     const btn = document.createElement('button'); btn.className = 'btn buy'; btn.textContent = 'Acheter';
