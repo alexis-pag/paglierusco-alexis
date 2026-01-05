@@ -1,6 +1,3 @@
-import { auth, db } from './auth.js';
-import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
-
 (() => {
   window.BountyGame = window.BountyGame || {};
   if (window.BountyGame.count === undefined) window.BountyGame.count = 0;
@@ -17,9 +14,6 @@ import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.0/f
   const counterEl = document.getElementById('counter');
   const cpsEl = document.getElementById('cps');
   const resetButton = document.getElementById('resetButton');
-  const clickSound = document.getElementById('clickSound');
-  const storeDiv = document.getElementById('storeItems');
-  const boostsDiv = document.getElementById('boostsContainer');
 
   const images = [
     'image/bounty.jpg','image/bounty2.jpg','image/bounty3.jpg',
@@ -27,6 +21,7 @@ import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.0/f
     'image/bounty7.jpg','image/bounty8.jpg','image/bountygraille.jpg'
   ];
   let lastImageIdx = -1;
+
   function changerImage(){
     if (!imgEl) return;
     let idx;
@@ -73,8 +68,6 @@ import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.0/f
 
   if (imgEl) {
     imgEl.addEventListener('click', (ev) => {
-      try { if (clickSound) { clickSound.currentTime = 0; clickSound.volume = 0.9; clickSound.play(); } } catch(e){}
-
       let bonus = window.BountyGame.multiplier ?? 1;
       const boosts = window.boostsData || [];
       if (boosts[0] && boosts[0].active) bonus *= 1.5;
@@ -107,6 +100,7 @@ import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.0/f
     if (typeof window.updateStore === 'function') window.updateStore();
   }, 1000);
 
+  // --- Sauvegarde uniquement en localStorage ---
   async function sauvegarderJeu(){
     const data = {
       count: window.BountyGame.count,
@@ -122,14 +116,7 @@ import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.0/f
       storeItems: (window.storeItemsData || []).map(it=>({ owned: it.owned, price: it.price })),
       boosts: (window.boostsData || []).map(b=>({ active: !!b.active, permanent: !!b.permanent }))
     };
-
     localStorage.setItem('bountySave', JSON.stringify(data));
-
-    if (auth.currentUser) {
-      try {
-        await setDoc(doc(db, 'users', auth.currentUser.uid), data);
-      } catch(e) { console.error("Erreur Firestore save:", e); }
-    }
   }
   window.sauvegarderJeu = sauvegarderJeu;
 
@@ -138,14 +125,6 @@ import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.0/f
     const raw = localStorage.getItem('bountySave');
     if (raw) {
       try { data = JSON.parse(raw); } catch(e){ data = {}; }
-    }
-
-    if (auth.currentUser) {
-      try {
-        const docRef = doc(db, 'users', auth.currentUser.uid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) data = docSnap.data();
-      } catch(e) { console.error("Erreur Firestore load:", e); }
     }
 
     window.BountyGame.count = data.count ?? window.BountyGame.count;
@@ -282,4 +261,5 @@ import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.0/f
   setInterval(sauvegarderJeu, 60000);
   window.updateRebirthUI = updateRebirthUI;
   window.applyRebirthBonus = applyRebirthBonus;
+
 })();
