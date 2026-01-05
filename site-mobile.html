@@ -7,65 +7,87 @@
   <link rel="stylesheet" href="script/css-mobile.css">
 </head>
 <body>
-  <a href="https://github.com/alexis-pag/paglierusco-alexis" id="githubButton" target="_blank">code source</a>
 
-  <div class="bg-animated"></div>
+<a href="https://github.com/alexis-pag/paglierusco-alexis" id="githubButton" target="_blank">code source</a>
 
-  <div class="layout">
-    <section class="panel clicker">
-      <header class="panel-header">
-        <h1>Bounty Clicker</h1>
-        <div class="counters">
-          <div id="counter">Croquettes : 0</div>
-          <div id="cps">CPS : 0</div>
-        </div>
-      </header>
-      <main class="panel-main">
-        <div class="image-wrap">
-          <img id="image" src="image/bounty.jpg" alt="Bounty">
-        </div>
-      </main>
-    </section>
+<div class="bg-animated"></div>
 
-    <aside class="panel shop" id="shopPanel">
-      <header class="panel-header" id="shopHeader">
-        <h2>Boutique</h2>
-      </header>
-      <div class="panel-main" id="shopContent">
-        <div id="storeItems" class="list shop-scroll"></div>
+<div class="layout">
+  <section class="panel clicker">
+    <header class="panel-header">
+      <h1>Bounty Clicker</h1>
+      <div class="counters">
+        <div id="counter">Croquettes : 0</div>
+        <div id="cps">CPS : 0</div>
       </div>
-    </aside>
-
-    <aside class="panel boosts">
-      <header class="panel-header"><h2>Boosts & Bonus</h2></header>
-      <div class="panel-main">
-        <div id="boostsContainer" class="list boosts-scroll"></div>
+    </header>
+    <main class="panel-main">
+      <div class="image-wrap">
+        <img id="image" src="image/bounty.jpg" alt="Bounty">
       </div>
-    </aside>
-  </div>
+    </main>
+  </section>
 
-  <div id="rebirthContainer">
-    <button id="rebirthButton">Rebirth</button>
-    <div id="rebirthInfo">Rebirths : 0</div>
-  </div>
+  <aside class="panel shop" id="shopPanel">
+    <header class="panel-header" id="shopHeader">
+      <h2>Boutique</h2>
+    </header>
+    <div class="panel-main" id="shopContent">
+      <div id="storeItems" class="list shop-scroll"></div>
+    </div>
+  </aside>
 
-  <footer class="bottom-bar">
-    <button id="resetButton" class="btn reset">Réinitialiser</button>
-  </footer>
+  <aside class="panel boosts">
+    <header class="panel-header"><h2>Boosts & Bonus</h2></header>
+    <div class="panel-main">
+      <div id="boostsContainer" class="list boosts-scroll"></div>
+    </div>
+  </aside>
+</div>
 
-  <script src="script/boutique.js" defer></script>
-  <script src="script/boost.js" defer></script>
-  <script src="script/main.js" defer></script>
+<div id="rebirthContainer">
+  <button id="rebirthButton">Rebirth</button>
+  <div id="rebirthInfo">Rebirths : 0</div>
+</div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const shopPanel = document.getElementById('shopPanel');
-      const shopHeader = document.getElementById('shopHeader');
-      shopPanel.classList.remove('open');
-      shopHeader.addEventListener('click', () => {
-        shopPanel.classList.toggle('open');
-      });
+<footer class="bottom-bar">
+  <button id="resetButton" class="btn reset">Réinitialiser</button>
+</footer>
+
+<!-- Bouton pour revenir au menu de choix version -->
+<div style="position:fixed; top:10px; right:10px; z-index:999;">
+  <button onclick="resetChoice()">Changer de version</button>
+</div>
+
+<script src="script/boutique.js" defer></script>
+<script src="script/boost.js" defer></script>
+<script src="script/main.js" defer></script>
+
+<script>
+  // Fonction pour revenir au menu de choix
+  function resetChoice() {
+    localStorage.removeItem("bc-version");
+    window.location.href = "index.html";
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const shopPanel = document.getElementById('shopPanel');
+    const shopHeader = document.getElementById('shopHeader');
+    shopPanel.classList.remove('open');
+    shopHeader.addEventListener('click', () => {
+      shopPanel.classList.toggle('open');
     });
-  </script>
+
+    // Redirection automatique si le choix mobile est déjà enregistré
+    const savedChoice = localStorage.getItem("bc-version");
+    if (savedChoice === "desktop") {
+      window.location.href = "site.html";
+    } else if (savedChoice === "mobile") {
+      // reste sur cette page, choix déjà enregistré
+      localStorage.setItem("bc-version", "mobile");
+    }
+  });
+</script>
+
 </body>
 </html>
