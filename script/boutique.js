@@ -1,4 +1,5 @@
 (() => {
+  // Définition des items du shop
   window.storeItemsData = [
     { name: "Gamelle à carottes", price: 15, bonusClick: 1, auto: 0, owned: 0, icon: "script/image/gamelle.png" },
     { name: "Clapier amélioré", price: 65, bonusClick: 5, auto: 0, owned: 0, icon: "script/image/clapier.png" },
@@ -36,72 +37,75 @@
   // Définit basePrice si absent
   window.storeItemsData.forEach(it => { if (it.basePrice === undefined) it.basePrice = it.price; });
 
-  const storeDiv = document.getElementById('storeItems');
-
-  function renderItem(item, idx) {
-    const root = document.createElement('div');
-    root.className = 'item';
-
-    const left = document.createElement('div'); left.className = 'left';
-    const img = document.createElement('img'); img.className = 'icon'; img.src = item.icon;
-    const txt = document.createElement('div');
-    txt.innerHTML = `<strong>${item.name}</strong><div style="font-size:12px;color:rgba(255,255,255,0.7)">Prix: ${item.price}</div>`;
-    left.appendChild(img); left.appendChild(txt); 
-
-    const right = document.createElement('div');
-    const btn = document.createElement('button'); btn.className = 'btn buy'; btn.textContent = 'Acheter';
-    btn.disabled = !(window.BountyGame && window.BountyGame.count >= item.price);
-    btn.addEventListener('click', (e) => { e.stopPropagation(); acheterItem(idx); });
-
-    const tooltip = document.createElement('span'); tooltip.className = 'tooltip';
-    if (item.bonusClick) tooltip.textContent = `+${item.bonusClick} par clic !`;
-    else if (item.auto) tooltip.textContent = `+${item.auto} auto-croquettes !`;
-    btn.appendChild(tooltip);
-
-    right.appendChild(btn);
-    const badge = document.createElement('div'); badge.className = 'count-badge'; badge.textContent = item.owned;
-
-    root.appendChild(left); root.appendChild(right); root.appendChild(badge);
-    return root;
-  }
-
-  function updateStore() {
-    storeDiv.innerHTML = '';
-    window.storeItemsData.forEach((item, idx) => {
-      const node = renderItem(item, idx);
-      storeDiv.appendChild(node);
-    });
-  }
-
-  function acheterItem(idx) {
-    const item = window.storeItemsData[idx];
-    if (!item) return;
-    if (window.BountyGame.count >= item.price) {
-      window.BountyGame.count -= item.price;
-      if (item.bonusClick) window.BountyGame.multiplier += item.bonusClick;
-      item.owned += 1;
-      item.price = Math.ceil(item.price * 1.4 / 5) * 5; // arrondi à 5
-
-      const node = storeDiv.children[idx];
-      const flash = document.createElement('div'); flash.className = 'boost-appear';
-      flash.style.position = 'absolute'; flash.style.inset = '0';
-      node.appendChild(flash); setTimeout(() => flash.remove(), 420);
-
-      if (window.updateCounterUI) window.updateCounterUI();
-      if (window.sauvegarderJeu) window.sauvegarderJeu();
-      updateStore();
-    } else {
-      const old = document.body.style.filter;
-      document.body.style.filter = 'brightness(.85)';
-      setTimeout(() => document.body.style.filter = old, 220);
-    }
-  }
-
-  window.updateStore = updateStore;
-  window.acheterItem = acheterItem;
-
+  // Encapsuler tout après DOMContentLoaded pour PC et Mobile
   document.addEventListener('DOMContentLoaded', () => {
+    const storeDiv = document.getElementById('storeItems') || document.getElementById('shopList');
+    if (!storeDiv) return;
+
+    function renderItem(item, idx) {
+      const root = document.createElement('div');
+      root.className = 'item';
+
+      const left = document.createElement('div'); left.className = 'left';
+      const img = document.createElement('img'); img.className = 'icon'; img.src = item.icon;
+      const txt = document.createElement('div');
+      txt.innerHTML = `<strong>${item.name}</strong><div style="font-size:12px;color:rgba(255,255,255,0.7)">Prix: ${item.price}</div>`;
+      left.appendChild(img); left.appendChild(txt);
+
+      const right = document.createElement('div');
+      const btn = document.createElement('button'); btn.className = 'btn buy'; btn.textContent = 'Acheter';
+      btn.disabled = !(window.BountyGame && window.BountyGame.count >= item.price);
+      btn.addEventListener('click', (e) => { e.stopPropagation(); acheterItem(idx); });
+
+      const tooltip = document.createElement('span'); tooltip.className = 'tooltip';
+      if (item.bonusClick) tooltip.textContent = `+${item.bonusClick} par clic !`;
+      else if (item.auto) tooltip.textContent = `+${item.auto} auto-croquettes !`;
+      btn.appendChild(tooltip);
+
+      right.appendChild(btn);
+      const badge = document.createElement('div'); badge.className = 'count-badge'; badge.textContent = item.owned;
+
+      root.appendChild(left); root.appendChild(right); root.appendChild(badge);
+      return root;
+    }
+
+    function updateStore() {
+      storeDiv.innerHTML = '';
+      window.storeItemsData.forEach((item, idx) => {
+        const node = renderItem(item, idx);
+        storeDiv.appendChild(node);
+      });
+    }
+
+    function acheterItem(idx) {
+      const item = window.storeItemsData[idx];
+      if (!item) return;
+      if ((window.BountyGame?.count ?? 0) >= item.price) {
+        window.BountyGame.count -= item.price;
+        if (item.bonusClick) window.BountyGame.multiplier += item.bonusClick;
+        item.owned += 1;
+        item.price = Math.ceil(item.price * 1.4 / 5) * 5;
+
+        // Animation flash
+        const node = storeDiv.children[idx];
+        const flash = document.createElement('div'); flash.className = 'boost-appear';
+        flash.style.position = 'absolute'; flash.style.inset = '0';
+        node.appendChild(flash); setTimeout(() => flash.remove(), 420);
+
+        if (window.updateCounterUI) window.updateCounterUI();
+        if (window.sauvegarderJeu) window.sauvegarderJeu();
+        updateStore();
+      } else {
+        const old = document.body.style.filter;
+        document.body.style.filter = 'brightness(.85)';
+        setTimeout(() => document.body.style.filter = old, 220);
+      }
+    }
+
+    window.updateStore = updateStore;
+    window.acheterItem = acheterItem;
+
+    // Affichage initial du shop
     setTimeout(() => updateStore(), 40);
   });
 })();
-
