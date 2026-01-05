@@ -1,19 +1,39 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bounty Game</title>
-<link rel="stylesheet" href="script/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bounty Clicker – Choix Version</title>
+  <link rel="stylesheet" href="script/style.css">
 </head>
 <body>
-<script src="script/auth.js"></script>
+
+<div id="choice" style="text-align:center; margin-top:50px;">
+  <h1>Choisir la version</h1>
+  <button id="btn-desktop">Version PC</button>
+  <button id="btn-mobile">Version Mobile</button>
+</div>
+
 <script>
-  if (!getCurrentUser()) {
-    window.location.href = 'login.html';
-  } else {
-    window.location.href = 'site.html';
+  // Vérifier si un choix est déjà enregistré
+  const savedChoice = localStorage.getItem("bc-version");
+  if (savedChoice === "desktop") {
+    window.location.href = "site.html";
+  } else if (savedChoice === "mobile") {
+    window.location.href = "site-mobile.html";
   }
+
+  // Gestion du clic sur les boutons
+  document.getElementById("btn-desktop").addEventListener("click", () => {
+    localStorage.setItem("bc-version", "desktop");
+    window.location.href = "site.html";
+  });
+
+  document.getElementById("btn-mobile").addEventListener("click", () => {
+    localStorage.setItem("bc-version", "mobile");
+    window.location.href = "site-mobile.html";
+  });
 </script>
+
 </body>
 </html>
